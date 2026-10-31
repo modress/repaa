@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" class="dark">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,14 +12,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         canvas: '#111215',
                         panel: '#1a1c23',
+                        cardbg: 'rgba(26, 28, 35, 0.75)',
+                        lineborder: 'rgba(255, 255, 255, 0.08)',
                     },
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
@@ -38,7 +42,7 @@
             font-size: 16px;
         }
 
-        /* Fast & Dynamic Background Blobs */
+        /* Fast and Prominent Liquid Glass Background Blobs (Fast Animation) */
         .bg-glow-container {
             position: fixed;
             top: 0;
@@ -73,19 +77,19 @@
             background: radial-gradient(circle, #d1d5db 0%, #1f2937 60%, transparent 100%);
             bottom: -150px;
             right: -150px;
-            animation: floatBlob2 1.6s infinite ease-in-out alternate;
+            animation: floatBlob2 1.7s infinite ease-in-out alternate;
         }
 
         @keyframes floatBlob1 {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(400px, 450px) scale(1.5) rotate(45deg); }
+            100% { transform: translate(380px, 400px) scale(1.5) rotate(45deg); }
         }
         @keyframes floatBlob2 {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(-450px, -400px) scale(1.45) rotate(-45deg); }
+            100% { transform: translate(-400px, -350px) scale(1.45) rotate(-45deg); }
         }
 
-        /* Apple iOS 27 Liquid Glass Cards */
+        /* Apple iOS Liquid Glass System */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(40px) saturate(200%);
@@ -95,13 +99,13 @@
             border-radius: 32px;
         }
 
-        /* Ultra-transparent top header */
+        /* Ultra-Transparent Top Header in iOS 27 Liquid Glass Style */
         .top-navbar {
-            background: rgba(17, 18, 21, 0.1);
-            backdrop-filter: blur(40px) saturate(250%);
-            -webkit-backdrop-filter: blur(40px) saturate(250%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            background: rgba(17, 18, 21, 0.15);
+            backdrop-filter: blur(40px) saturate(220%);
+            -webkit-backdrop-filter: blur(40px) saturate(220%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .nav-btn.active {
@@ -166,7 +170,7 @@
 
     <!-- MAIN APP CONTAINER -->
     <div class="relative z-10 flex flex-col min-h-screen pb-12">
-        
+
         <!-- Top Navigation Header -->
         <header class="sticky top-0 z-40 top-navbar px-4 py-3.5">
             <div class="max-w-3xl mx-auto flex items-center justify-between">
@@ -176,7 +180,7 @@
                     </div>
                     <div>
                         <div class="font-bold text-white text-sm tracking-tight">modress.core</div>
-                        <div id="admin-badge-label" class="text-xs font-mono text-gray-400">telegram engineer</div>
+                        <div class="text-xs font-mono text-gray-400">telegram engineer</div>
                     </div>
                 </div>
 
@@ -189,13 +193,10 @@
                     <button onclick="switchTab('contact')" id="tab-contact" class="nav-btn px-4 py-2 rounded-full text-gray-400 hover:text-white transition-all">Связь</button>
                 </nav>
 
-                <!-- Mobile Header Nav -->
-                <div class="flex md:hidden overflow-x-auto no-scrollbar gap-1 max-w-[200px] sm:max-w-[260px] p-1 bg-white/5 rounded-full border border-white/10">
-                    <button onclick="switchTab('hero')" id="mtab-hero" class="nav-btn active px-3 py-1.5 rounded-full text-xs shrink-0">Главная</button>
-                    <button onclick="switchTab('about')" id="mtab-about" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">О мне</button>
-                    <button onclick="switchTab('price')" id="mtab-price" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">Прайс</button>
-                    <button onclick="switchTab('reviews')" id="mtab-reviews" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">Отзывы</button>
-                    <button onclick="switchTab('contact')" id="mtab-contact" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">Связь</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="tgOpen('https://t.me/neleron')" class="flex items-center gap-2 bg-white hover:bg-gray-200 text-black text-xs font-bold px-5 py-3 rounded-full transition-all shadow-xl">
+                        Написать @neleron
+                    </button>
                 </div>
             </div>
         </header>
@@ -233,7 +234,7 @@
 
             <!-- SECTION 2: ABOUT -->
             <section id="sec-about" class="hidden space-y-6 anim-in">
-                <div class="glass-card p-8 md:p-10 space-y-5 rounded-[36px]">
+                <div class="glass-card p-8 md:p-10 space-y-5">
                     <h2 class="text-xl font-bold text-white font-mono">// О разработчике</h2>
                     <p class="text-base text-gray-300 leading-relaxed">
                         Меня зовут Modress. Профессионально занимаюсь разработкой ПО, созданием интеграций, ботов любой сложности и интерактивных интерфейсов. Фокусируюсь на качестве, отказоустойчивости серверов и удобстве интерфейсов.
@@ -335,22 +336,22 @@
                     </button>
                 </div>
 
-                <!-- Search Box -->
+                <!-- Строка поиска -->
                 <div class="search-input-box glass-card px-4 py-3.5 flex items-center gap-3 rounded-[24px]">
                     <span class="text-gray-400 text-base">🔍</span>
                     <input type="text" id="review-search" oninput="renderReviews()" placeholder="Поиск по отзывам или именам клиентов..." class="w-full bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none font-sans">
                 </div>
 
-                <!-- Filter Tabs -->
+                <!-- Под-вкладки -->
                 <div class="flex items-center gap-1.5 p-1.5 glass-card rounded-full w-fit">
                     <button onclick="setReviewFilter('all')" id="filter-all" class="px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all">Все (<span id="count-all">0</span>)</button>
                     <button onclick="setReviewFilter('with-photo')" id="filter-with-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">📷 С фото (<span id="count-photo">0</span>)</button>
                     <button onclick="setReviewFilter('without-photo')" id="filter-without-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">💬 Без фото (<span id="count-nophoto">0</span>)</button>
                 </div>
 
-                <!-- Reviews Grid -->
+                <!-- Сетка отзывов -->
                 <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Dynamic Items -->
+                    <!-- Заполняется динамически из базы Firebase -->
                 </div>
             </section>
 
@@ -395,9 +396,10 @@
                     </div>
                 </div>
             </section>
+
         </main>
 
-        <!-- iOS SHEET MODAL FOR ADDING REVIEW -->
+        <!-- iOS STYLE SHEET MODAL FOR ADDING REVIEW -->
         <div id="review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all" onclick="if(event.target === this) closeReviewModal()">
             <div class="w-full max-w-lg bg-[#1c1c1e] sm:bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-t-[36px] sm:rounded-[32px] p-6 sm:p-7 space-y-5 border border-white/15 shadow-2xl anim-in relative max-h-[90vh] overflow-y-auto">
                 
@@ -426,7 +428,11 @@
                         <span class="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Verified</span>
                     </div>
 
-                    <!-- Segmented Rating Selector -->
+                    <input type="hidden" id="rev-name">
+                    <input type="hidden" id="rev-link">
+                    <input type="hidden" id="rev-photo">
+
+                    <!-- iOS Segmented Rating Selector -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-2 px-1">Ваша оценка</label>
                         <div class="grid grid-cols-5 gap-1.5 p-1 bg-black/40 border border-white/10 rounded-2xl">
@@ -441,10 +447,10 @@
                     <!-- Text Area -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Текст отзыва</label>
-                        <textarea id="rev-text" rows="3" placeholder="Опишите ваши впечатления от работы..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all font-sans resize-none"></textarea>
+                        <textarea id="rev-text" rows="3" placeholder="Опишите ваши впечатления от работы..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all font-sans resize-none"></textarea>
                     </div>
 
-                    <!-- Image Attachment Box -->
+                    <!-- iOS Image Attachment Box -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Прикрепить скриншот / фото</label>
                         <div class="relative bg-black/30 border border-dashed border-white/20 hover:border-white/40 rounded-2xl p-3.5 transition-all flex items-center justify-between cursor-pointer group" onclick="document.getElementById('rev-file').click()">
@@ -470,149 +476,64 @@
 
     </div>
 
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'modress-reviews-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "demo", projectId: "demo" };
-
-        let app, db, auth;
-        let globalReviewsCache = [];
-        let isAdmin = false;
-
-        window.telegramUser = {
-            name: "Клиент",
-            link: "https://t.me/neleron",
-            photo: "",
-            username: ""
-        };
-
-        async function initFirebase() {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (e) {
-                console.warn("Firebase offline mode / fallback", e);
-            }
-
-            // Telegram WebApp SDK Integration
-            const tg = window.Telegram?.WebApp;
-            if (tg) { tg.ready(); tg.expand(); }
-
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const u = tg.initDataUnsafe.user;
-                if (u.username) window.telegramUser.username = u.username.toLowerCase();
-                window.telegramUser.name = u.first_name + (u.last_name ? " " + u.last_name : "");
-                if (u.username) {
-                    window.telegramUser.link = `https://t.me/${u.username}`;
-                    window.telegramUser.name += ` (@${u.username})`;
-                }
-                if (u.photo_url) window.telegramUser.photo = u.photo_url;
-            }
-
-            // Fallback for preview / testing: if URL hash contains #neleron or forced
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('admin') === '1' || window.location.hash.includes('neleron')) {
-                window.telegramUser.username = 'neleron';
-            }
-
-            isAdmin = window.telegramUser.username === 'neleron' || window.telegramUser.username === 'neleronbot' || !window.telegramUser.username;
-
-            if (isAdmin) {
-                const badge = document.getElementById('admin-badge-label');
-                if (badge) badge.innerHTML = `<span class="text-emerald-400 font-bold">● Admin Mode (@neleron)</span>`;
-            }
-
-            // Setup iOS Profile Banner in Modal
-            document.getElementById('ios-user-display').textContent = window.telegramUser.name;
-            const avatarBox = document.getElementById('ios-user-avatar');
-            if (window.telegramUser.photo) {
-                avatarBox.innerHTML = `<img src="${window.telegramUser.photo}" class="w-full h-full object-cover">`;
-            } else {
-                avatarBox.textContent = window.telegramUser.name.charAt(0).toUpperCase();
-            }
-
-            // Firestore Live Listener
-            if (db) {
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'reviews_list');
-                onSnapshot(colRef, (snapshot) => {
-                    const loaded = [];
-                    snapshot.forEach(docSnap => {
-                        loaded.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    // Sort newest first
-                    loaded.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                    globalReviewsCache = loaded;
-                    window.renderReviews();
-                }, (error) => {
-                    console.error("Firestore snapshot error:", error);
-                    fallbackLocalStorageLoad();
-                });
-            } else {
-                fallbackLocalStorageLoad();
-            }
-        }
-
-        function fallbackLocalStorageLoad() {
-            const saved = localStorage.getItem('modress_pro_reviews_fb');
-            globalReviewsCache = saved ? JSON.parse(saved) : [];
-            window.renderReviews();
-        }
-
-        window.getGlobalReviews = function() {
-            return globalReviewsCache;
-        };
-
-        window.addNewReviewToDB = async function(newRev) {
-            if (db) {
-                try {
-                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'reviews_list');
-                    await addDoc(colRef, { ...newRev, timestamp: Date.now() });
-                    return;
-                } catch(e) {
-                    console.error("Firestore add error:", e);
-                }
-            }
-            // Local fallback
-            globalReviewsCache.unshift({ id: 'local_' + Date.now(), ...newRev, timestamp: Date.now() });
-            localStorage.setItem('modress_pro_reviews_fb', JSON.stringify(globalReviewsCache));
-            window.renderReviews();
-        };
-
-        window.deleteReviewFromDB = async function(reviewId) {
-            if (!isAdmin) return;
-            if (db && !reviewId.startsWith('local_')) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reviews_list', reviewId);
-                    await deleteDoc(docRef);
-                    return;
-                } catch(e) {
-                    console.error("Firestore delete error:", e);
-                }
-            }
-            globalReviewsCache = globalReviewsCache.filter(r => r.id !== reviewId);
-            localStorage.setItem('modress_pro_reviews_fb', JSON.stringify(globalReviewsCache));
-            window.renderReviews();
-        };
-
-        window.isUserAdmin = function() {
-            return isAdmin;
-        };
-
-        initFirebase();
-    </script>
-
     <script>
+        // Инициализация Firebase (Общая облачная база данных для всех пользователей в реальном времени)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-MockKeyForDemoModressApp12345",
+            authDomain: "modress-reviews.firebaseapp.com",
+            projectId: "modress-reviews",
+            storageBucket: "modress-reviews.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef12345678"
+        };
+        
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+        } catch(e) {
+            console.error("Firebase init error", e);
+        }
+        const db = firebase.firestore();
+
+        let tg = window.Telegram?.WebApp;
+        if (tg) { tg.ready(); tg.expand(); }
+
+        let userName = "Клиент";
+        let userLink = "https://t.me/neleron";
+        let userPhoto = "";
+        let currentUsername = "";
+
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const u = tg.initDataUnsafe.user;
+            if (u.username) {
+                currentUsername = u.username.toLowerCase();
+            }
+            userName = u.first_name + (u.last_name ? " " + u.last_name : "");
+            if (u.username) {
+                userLink = `https://t.me/${u.username}`;
+                userName += ` (@${u.username})`;
+            }
+            if (u.photo_url) {
+                userPhoto = u.photo_url;
+            }
+        }
+
+        // Проверка администраторских прав: удаление доступно ТОЛЬКО @neleron и @neleronbot
+        let isAdmin = currentUsername === 'neleron' || currentUsername === 'neleronbot';
+
+        document.getElementById('rev-name').value = userName;
+        document.getElementById('rev-link').value = userLink;
+        document.getElementById('rev-photo').value = userPhoto;
+
+        document.getElementById('ios-user-display').textContent = userName;
+        const avatarBox = document.getElementById('ios-user-avatar');
+        if (userPhoto) {
+            avatarBox.innerHTML = `<img src="${userPhoto}" class="w-full h-full object-cover">`;
+        } else {
+            avatarBox.textContent = userName.charAt(0).toUpperCase();
+        }
+
         let currentRating = 5;
         const starSegs = document.querySelectorAll('.ios-star-seg');
         starSegs.forEach(seg => {
@@ -655,20 +576,16 @@
                 activeSec.classList.add('anim-in');
             }
 
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active', 'text-white'));
-
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             const dBtn = document.getElementById(`tab-${tabId}`);
             if (dBtn) dBtn.classList.add('active');
-
-            const mBtn = document.getElementById(`mtab-${tabId}`);
-            if (mBtn) mBtn.classList.add('active', 'text-white');
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function tgOpen(url) {
-            if (window.Telegram?.WebApp?.openLink) {
-                window.Telegram.WebApp.openLink(url);
+            if (tg && tg.openLink) {
+                tg.openLink(url);
             } else {
                 window.open(url, '_blank');
             }
@@ -679,6 +596,7 @@
         }
 
         let currentReviewFilter = 'all';
+        let cachedReviews = [];
 
         function setReviewFilter(filter) {
             currentReviewFilter = filter;
@@ -694,21 +612,33 @@
             renderReviews();
         }
 
-        window.renderReviews = function() {
+        // Загрузка отзывов в реальном времени из Firestore
+        function initReviewsListener() {
+            db.collection("modress_reviews").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                cachedReviews = [];
+                snapshot.forEach((doc) => {
+                    cachedReviews.push({ id: doc.id, ...doc.data() });
+                });
+                renderReviews();
+            }, (error) => {
+                console.error("Firestore sync error:", error);
+            });
+        }
+
+        function renderReviews() {
             const list = document.getElementById('reviews-container');
             if (!list) return;
 
-            const reviews = window.getGlobalReviews ? window.getGlobalReviews() : [];
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
 
-            const withPhoto = reviews.filter(r => r.image && r.image.trim() !== '');
-            const withoutPhoto = reviews.filter(r => !r.image || r.image.trim() === '');
+            const withPhoto = cachedReviews.filter(r => r.image && r.image.trim() !== '');
+            const withoutPhoto = cachedReviews.filter(r => !r.image || r.image.trim() === '');
 
-            document.getElementById('count-all').textContent = reviews.length;
+            document.getElementById('count-all').textContent = cachedReviews.length;
             document.getElementById('count-photo').textContent = withPhoto.length;
             document.getElementById('count-nophoto').textContent = withoutPhoto.length;
 
-            let targetReviews = reviews;
+            let targetReviews = cachedReviews;
             if (currentReviewFilter === 'with-photo') targetReviews = withPhoto;
             if (currentReviewFilter === 'without-photo') targetReviews = withoutPhoto;
 
@@ -724,8 +654,6 @@
                 return;
             }
 
-            const isAdminUser = window.isUserAdmin ? window.isUserAdmin() : false;
-
             list.innerHTML = targetReviews.map((r) => {
                 let starsHtml = '';
                 for (let i = 1; i <= 5; i++) {
@@ -738,7 +666,8 @@
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
-                let deleteBtnHtml = isAdminUser ? `
+                // Кнопка удаления отображается СТРОГО для администратора
+                let deleteBtnHtml = isAdmin ? `
                     <button onclick="deleteReview('${r.id}')" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
                         Удалить ✕
                     </button>
@@ -768,13 +697,16 @@
                     </div>
                 `;
             }).join('');
-        };
+        }
 
-        window.deleteReview = function(id) {
-            if (window.deleteReviewFromDB) {
-                window.deleteReviewFromDB(id);
+        async function deleteReview(docId) {
+            if (!isAdmin) return;
+            try {
+                await db.collection("modress_reviews").doc(docId).delete();
+            } catch(e) {
+                console.error("Error deleting review:", e);
             }
-        };
+        }
 
         function openReviewModal() {
             const modal = document.getElementById('review-modal');
@@ -806,43 +738,47 @@
                 return;
             }
 
-            const name = window.telegramUser.name || "Клиент";
-            const link = window.telegramUser.link || "https://t.me/neleron";
-            const photo = window.telegramUser.photo || "";
+            const name = userName || "Аноним";
+            const link = userLink || "https://t.me/neleron";
+            const photo = userPhoto || "";
 
-            const saveReviewData = (imageUrl = '') => {
-                const newReview = { 
-                    name, 
-                    link, 
-                    photo, 
-                    rating: currentRating || 5, 
-                    text, 
-                    image: imageUrl 
-                };
-
-                if (window.addNewReviewToDB) {
-                    window.addNewReviewToDB(newReview);
+            const saveReviewToFirebase = async (imageUrl = '') => {
+                try {
+                    await db.collection("modress_reviews").add({
+                        name,
+                        link,
+                        photo,
+                        rating: currentRating || 5,
+                        text,
+                        image: imageUrl,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch(e) {
+                    console.error("Firebase save error", e);
                 }
 
                 if (textInput) textInput.value = '';
                 if (fileInput) fileInput.value = '';
-
                 const fileNameLabel = document.getElementById('ios-file-name');
                 if (fileNameLabel) fileNameLabel.textContent = 'Выбрать медиафайл';
-
                 currentRating = 5;
+
                 closeReviewModal();
             };
 
             if (fileInput && fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) { saveReviewData(e.target.result); };
-                reader.onerror = function() { saveReviewData(''); };
+                reader.onload = function(e) { saveReviewToFirebase(e.target.result); };
+                reader.onerror = function() { saveReviewToFirebase(''); };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                saveReviewData('');
+                saveReviewToFirebase('');
             }
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initReviewsListener();
+        });
     </script>
 </body>
 </html>
