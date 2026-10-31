@@ -39,7 +39,6 @@
             font-size: 16px;
         }
 
-        /* Fast and Prominent Liquid Glass Background Blobs */
         .bg-glow-container {
             position: fixed;
             top: 0;
@@ -86,7 +85,6 @@
             100% { transform: translate(-400px, -350px) scale(1.45) rotate(-45deg); }
         }
 
-        /* Apple iOS Liquid Glass System */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(40px) saturate(200%);
@@ -96,7 +94,6 @@
             border-radius: 32px;
         }
 
-        /* Ultra-Transparent Top Header in iOS 27 Liquid Glass Style */
         .top-navbar {
             background: rgba(17, 18, 21, 0.15);
             backdrop-filter: blur(40px) saturate(220%);
@@ -105,7 +102,6 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        /* Capsule Nav Style */
         .nav-capsule {
             background: rgba(26, 28, 35, 0.65);
             backdrop-filter: blur(25px) saturate(180%);
@@ -175,16 +171,13 @@
 </head>
 <body class="font-sans antialiased text-white min-h-screen flex flex-col justify-between selection:bg-white selection:text-black">
 
-    <!-- Background Glowing Gradient Container -->
     <div class="bg-glow-container">
         <div class="glow-blob blob-1"></div>
         <div class="glow-blob blob-2"></div>
     </div>
 
-    <!-- MAIN APP CONTAINER -->
     <div class="relative z-10 flex flex-col min-h-screen pb-12">
 
-        <!-- Top Navigation Header -->
         <header class="sticky top-0 z-40 top-navbar px-4 py-3.5">
             <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3.5 cursor-pointer shrink-0" onclick="switchTab('hero')">
@@ -197,7 +190,6 @@
                     </div>
                 </div>
 
-                <!-- Capsule Nav Bar -->
                 <nav class="hidden md:flex items-center gap-1 p-1.5 rounded-full nav-capsule">
                     <button onclick="switchTab('hero')" id="tab-hero" class="nav-btn active px-4 py-2 rounded-full text-xs font-medium transition-all">Главная</button>
                     <button onclick="switchTab('about')" id="tab-about" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">О мне</button>
@@ -214,7 +206,6 @@
             </div>
         </header>
 
-        <!-- Mobile Capsule Nav Bar -->
         <div class="md:hidden px-4 pt-3">
             <nav class="flex items-center justify-between p-1.5 rounded-full nav-capsule overflow-x-auto">
                 <button onclick="switchTab('hero')" id="mob-tab-hero" class="nav-btn active px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Главная</button>
@@ -225,10 +216,8 @@
             </nav>
         </div>
 
-        <!-- Main Body Content -->
         <main class="max-w-2xl mx-auto px-4 pt-6 flex-1 w-full">
 
-            <!-- SECTION 1: HERO -->
             <section id="sec-hero" class="space-y-6 anim-in">
                 <div class="glass-card p-8 md:p-12 space-y-6 text-center rounded-[36px]">
                     <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-mono text-gray-200 mx-auto shadow-inner">
@@ -256,7 +245,6 @@
                 </div>
             </section>
 
-            <!-- SECTION 2: ABOUT -->
             <section id="sec-about" class="hidden space-y-6 anim-in">
                 <div class="glass-card p-8 md:p-10 space-y-5">
                     <h2 class="text-xl font-bold text-white font-mono">// О разработчике</h2>
@@ -266,7 +254,6 @@
                 </div>
             </section>
 
-            <!-- SECTION 3: PRICE -->
             <section id="sec-price" class="hidden space-y-6 anim-in">
                 <div class="space-y-1">
                     <h2 class="text-xl font-bold text-white font-mono">// Прайс-лист услуг</h2>
@@ -348,7 +335,6 @@
                 </div>
             </section>
 
-            <!-- SECTION 4: REVIEWS -->
             <section id="sec-reviews" class="hidden space-y-6 anim-in">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
@@ -360,26 +346,22 @@
                     </button>
                 </div>
 
-                <!-- Строка поиска -->
                 <div class="search-input-box glass-card px-4 py-3.5 flex items-center gap-3 rounded-[24px]">
                     <span class="text-gray-400 text-base">🔍</span>
                     <input type="text" id="review-search" oninput="renderReviews()" placeholder="Поиск по отзывам или именам клиентов..." class="w-full bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none font-sans">
                 </div>
 
-                <!-- Под-вкладки -->
                 <div class="flex items-center gap-1.5 p-1.5 glass-card rounded-full w-fit">
                     <button onclick="setReviewFilter('all')" id="filter-all" class="px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all">Все (<span id="count-all">0</span>)</button>
                     <button onclick="setReviewFilter('with-photo')" id="filter-with-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">📷 С фото (<span id="count-photo">0</span>)</button>
                     <button onclick="setReviewFilter('without-photo')" id="filter-without-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">💬 Без фото (<span id="count-nophoto">0</span>)</button>
                 </div>
 
-                <!-- Сетка отзывов -->
                 <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Заполняется динамически из публичного облака -->
+                    <!-- Загружается с бэкенда -->
                 </div>
             </section>
 
-            <!-- SECTION 5: CONTACTS -->
             <section id="sec-contact" class="hidden space-y-6 anim-in">
                 <div class="glass-card p-8 md:p-10 space-y-6 rounded-[36px]">
                     <h2 class="text-xl font-bold text-white font-mono">// Контакты</h2>
@@ -423,14 +405,11 @@
 
         </main>
 
-        <!-- iOS STYLE SHEET MODAL FOR ADDING REVIEW -->
         <div id="review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all" onclick="if(event.target === this) closeReviewModal()">
             <div class="w-full max-w-lg bg-[#1c1c1e] sm:bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-t-[36px] sm:rounded-[32px] p-6 sm:p-7 space-y-5 border border-white/15 shadow-2xl anim-in relative max-h-[90vh] overflow-y-auto">
                 
-                <!-- iOS Grabber Bar -->
                 <div class="w-10 h-1 bg-white/30 rounded-full mx-auto sm:hidden mb-1"></div>
 
-                <!-- Header -->
                 <div class="flex items-center justify-between pb-3 border-b border-white/10">
                     <div>
                         <h3 class="text-lg font-bold text-white tracking-tight">Новый отзыв</h3>
@@ -440,7 +419,6 @@
                 </div>
 
                 <div class="space-y-4">
-                    <!-- Telegram Profile Info Banner -->
                     <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3">
                         <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-white font-mono overflow-hidden shrink-0 border border-white/10" id="ios-user-avatar">
                             U
@@ -452,11 +430,6 @@
                         <span class="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Verified</span>
                     </div>
 
-                    <input type="hidden" id="rev-name">
-                    <input type="hidden" id="rev-link">
-                    <input type="hidden" id="rev-photo">
-
-                    <!-- iOS Segmented Rating Selector -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-2 px-1">Ваша оценка</label>
                         <div class="grid grid-cols-5 gap-1.5 p-1 bg-black/40 border border-white/10 rounded-2xl">
@@ -468,13 +441,11 @@
                         </div>
                     </div>
 
-                    <!-- Text Area -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Текст отзыва</label>
                         <textarea id="rev-text" rows="3" placeholder="Опишите ваши впечатления от работы..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all font-sans resize-none"></textarea>
                     </div>
 
-                    <!-- iOS Image Attachment Box -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Прикрепить скриншот / фото</label>
                         <div class="relative bg-black/30 border border-dashed border-white/20 hover:border-white/40 rounded-2xl p-3.5 transition-all flex items-center justify-between cursor-pointer group" onclick="document.getElementById('rev-file').click()">
@@ -490,7 +461,6 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
                     <button type="button" onclick="submitReview()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-2xl text-sm transition-all active:scale-[0.98] shadow-xl mt-2 cursor-pointer">
                         Опубликовать отзыв
                     </button>
@@ -511,25 +481,16 @@
 
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
-            if (u.username) {
-                currentUsername = u.username.toLowerCase();
-            }
+            if (u.username) currentUsername = u.username.toLowerCase();
             userName = u.first_name + (u.last_name ? " " + u.last_name : "");
             if (u.username) {
                 userLink = `https://t.me/${u.username}`;
                 userName += ` (@${u.username})`;
             }
-            if (u.photo_url) {
-                userPhoto = u.photo_url;
-            }
+            if (u.photo_url) userPhoto = u.photo_url;
         }
 
-        // Права администратора строго для @neleron / @neleronbot
         let isAdmin = currentUsername === 'neleron' || currentUsername === 'neleronbot';
-
-        document.getElementById('rev-name').value = userName;
-        document.getElementById('rev-link').value = userLink;
-        document.getElementById('rev-photo').value = userPhoto;
 
         document.getElementById('ios-user-display').textContent = userName;
         const avatarBox = document.getElementById('ios-user-avatar');
@@ -584,25 +545,16 @@
             ['hero', 'about', 'price', 'reviews', 'contact'].forEach(s => {
                 const dBtn = document.getElementById(`tab-${s}`);
                 const mBtn = document.getElementById(`mob-tab-${s}`);
-                if (dBtn) {
-                    if (s === tabId) dBtn.classList.add('active');
-                    else dBtn.classList.remove('active');
-                }
-                if (mBtn) {
-                    if (s === tabId) mBtn.classList.add('active');
-                    else mBtn.classList.remove('active');
-                }
+                if (dBtn) dBtn.className = (s === tabId) ? "nav-btn active px-4 py-2 rounded-full text-xs font-medium transition-all" : "nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all";
+                if (mBtn) mBtn.className = (s === tabId) ? "nav-btn active px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap" : "nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap";
             });
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function tgOpen(url) {
-            if (tg && tg.openLink) {
-                tg.openLink(url);
-            } else {
-                window.open(url, '_blank');
-            }
+            if (tg && tg.openLink) tg.openLink(url);
+            else window.open(url, '_blank');
         }
 
         function toggleContactCard(card) {
@@ -610,52 +562,94 @@
         }
 
         let currentReviewFilter = 'all';
-        let cloudReviews = [];
+        let serverReviews = [];
+        const API_URL = "http://localhost:8000/api/reviews"; // Адрес вашего Python бэкенда
 
-        // Использование публичного бэкенда для синхронизации всех пользователей в реальном времени
-        const BIN_URL = "https://api.jsonbin.io/v3/b/678e359ead19ca34f8ed5342";
-        const BIN_KEY = "$2a$10$QvK...mock";
-
-        async function fetchCloudReviews() {
+        async function fetchReviewsFromServer() {
             try {
-                // Пытаемся взять общие данные из публичного хранилища, подстраховываясь localStorage
-                const response = await fetch(BIN_URL + "/latest", {
-                    headers: { "X-Access-Key": "$2a$10$7h...public" }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.record) {
-                        cloudReviews = data.record.reviews || [];
-                        renderReviews();
-                        return;
-                    }
+                const res = await fetch(API_URL);
+                if (res.ok) {
+                    serverReviews = await res.json();
+                    renderReviews();
                 }
-            } catch(e) {}
-
-            // Запасной вариант через глобальный localStorage, если сеть заблокирована
-            const fallback = localStorage.getItem('modress_universal_cloud_sync');
-            if (fallback) {
-                try { cloudReviews = JSON.parse(fallback); } catch(err) { cloudReviews = []; }
+            } catch (e) {
+                console.error("Ошибка связи с сервером", e);
             }
-            renderReviews();
         }
 
-        async function saveCloudReviews(reviews) {
-            cloudReviews = reviews;
-            localStorage.setItem('modress_universal_cloud_sync', JSON.stringify(reviews));
-            
-            try {
-                await fetch(BIN_URL, {
-                    method: 'PUT',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Access-Key": "$2a$10$7h...public"
-                    },
-                    body: JSON.stringify({ reviews })
-                });
-            } catch(e) {}
+        async function submitReview() {
+            const textInput = document.getElementById('rev-text');
+            const text = textInput ? textInput.value.trim() : '';
+            const fileInput = document.getElementById('rev-file');
 
-            renderReviews();
+            if (!text) {
+                if (textInput) {
+                    textInput.focus();
+                    textInput.classList.add('ring-2', 'ring-red-500');
+                    setTimeout(() => textInput.classList.remove('ring-2', 'ring-red-500'), 1500);
+                }
+                return;
+            }
+
+            const newReview = {
+                name: userName || "Клиент",
+                link: userLink || "https://t.me/neleron",
+                photo: userPhoto || "",
+                rating: currentRating || 5,
+                text: text,
+                image: ""
+            };
+
+            const sendData = async (imgData = "") => {
+                newReview.image = imgData;
+                try {
+                    const res = await fetch(API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(newReview)
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        serverReviews = data.reviews;
+                        renderReviews();
+                    }
+                } catch(e) {
+                    alert("Не удалось отправить отзыв на сервер!");
+                }
+
+                if (textInput) textInput.value = '';
+                if (fileInput) fileInput.value = '';
+                document.getElementById('ios-file-name').textContent = 'Выбрать медиафайл';
+                currentRating = 5;
+                closeReviewModal();
+                switchTab('reviews');
+            };
+
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { sendData(e.target.result); };
+                reader.onerror = function() { sendData(""); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                sendData("");
+            }
+        }
+
+        async function deleteReview(index) {
+            try {
+                const res = await fetch(`${API_URL}/${index}?username=${currentUsername}`, {
+                    method: "DELETE"
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    serverReviews = data.reviews;
+                    renderReviews();
+                } else {
+                    alert("Ошибка удаления: недостаточно прав");
+                }
+            } catch(e) {
+                alert("Ошибка связи с сервером");
+            }
         }
 
         function setReviewFilter(filter) {
@@ -663,11 +657,7 @@
             ['all', 'with-photo', 'without-photo'].forEach(f => {
                 const btn = document.getElementById(`filter-${f}`);
                 if (!btn) return;
-                if (f === filter) {
-                    btn.className = "px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all";
-                } else {
-                    btn.className = "px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
-                }
+                btn.className = (f === filter) ? "px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all" : "px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
             });
             renderReviews();
         }
@@ -678,14 +668,14 @@
 
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
 
-            const withPhoto = cloudReviews.filter(r => r.image && r.image.trim() !== '');
-            const withoutPhoto = cloudReviews.filter(r => !r.image || r.image.trim() === '');
+            const withPhoto = serverReviews.filter(r => r.image && r.image.trim() !== '');
+            const withoutPhoto = serverReviews.filter(r => !r.image || r.image.trim() === '');
 
-            document.getElementById('count-all').textContent = cloudReviews.length;
+            document.getElementById('count-all').textContent = serverReviews.length;
             document.getElementById('count-photo').textContent = withPhoto.length;
             document.getElementById('count-nophoto').textContent = withoutPhoto.length;
 
-            let targetReviews = cloudReviews;
+            let targetReviews = serverReviews;
             if (currentReviewFilter === 'with-photo') targetReviews = withPhoto;
             if (currentReviewFilter === 'without-photo') targetReviews = withoutPhoto;
 
@@ -713,7 +703,6 @@
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
-                // Кнопка удаления видна исключительно администратору (@neleron)
                 let deleteBtnHtml = isAdmin ? `
                     <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
                         Удалить ✕
@@ -746,12 +735,6 @@
             }).join('');
         }
 
-        function deleteReview(index) {
-            const reviews = [...cloudReviews];
-            reviews.splice(index, 1);
-            saveCloudReviews(reviews);
-        }
-
         function openReviewModal() {
             const modal = document.getElementById('review-modal');
             if (modal) {
@@ -768,62 +751,10 @@
             }
         }
 
-        function submitReview() {
-            const textInput = document.getElementById('rev-text');
-            const text = textInput ? textInput.value.trim() : '';
-            const fileInput = document.getElementById('rev-file');
-
-            if (!text) {
-                if (textInput) {
-                    textInput.focus();
-                    textInput.classList.add('ring-2', 'ring-red-500');
-                    setTimeout(() => textInput.classList.remove('ring-2', 'ring-red-500'), 1500);
-                }
-                return;
-            }
-
-            const name = userName || "Аноним";
-            const link = userLink || "https://t.me/neleron";
-            const photo = userPhoto || "";
-
-            const saveReviewData = (imageUrl = '') => {
-                const newReview = {
-                    name,
-                    link,
-                    photo,
-                    rating: currentRating || 5,
-                    text,
-                    image: imageUrl
-                };
-
-                const reviews = [...cloudReviews];
-                reviews.unshift(newReview);
-                saveCloudReviews(reviews);
-
-                if (textInput) textInput.value = '';
-                if (fileInput) fileInput.value = '';
-                const fileNameLabel = document.getElementById('ios-file-name');
-                if (fileNameLabel) fileNameLabel.textContent = 'Выбрать медиафайл';
-                currentRating = 5;
-
-                closeReviewModal();
-                switchTab('reviews');
-            };
-
-            if (fileInput && fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) { saveReviewData(e.target.result); };
-                reader.onerror = function() { saveReviewData(''); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                saveReviewData('');
-            }
-        }
-
         window.addEventListener('DOMContentLoaded', () => {
-            fetchCloudReviews();
-            // Каждые 2 секунды подтягиваем свежие отзывы из облака для всех пользователей
-            setInterval(fetchCloudReviews, 2000);
+            fetchReviewsFromServer();
+            // Автоматическое обновление каждые 3 секунды, чтобы подтягивать чужие отзывы
+            setInterval(fetchReviewsFromServer, 3000);
         });
     </script>
 </body>
