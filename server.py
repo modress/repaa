@@ -31,9 +31,12 @@ def save_reviews(reviews):
         json.dump(reviews, f, ensure_ascii=False, indent=2)
 
 class Review(BaseModel):
-    name: str
+    name: str = "Клиент"
     text: str
+    rating: int = 5
     image: str = None
+    link: str = None
+    photo: str = None
 
 @app.get("/api/reviews")
 def get_reviews():
@@ -46,7 +49,10 @@ def add_review(review: Review):
         "id": str(uuid.uuid4()),
         "name": review.name,
         "text": review.text,
-        "image": review.image
+        "rating": review.rating,
+        "image": review.image,
+        "link": review.link,
+        "photo": review.photo
     }
     reviews.append(new_review)
     save_reviews(reviews)
@@ -55,7 +61,7 @@ def add_review(review: Review):
 @app.delete("/api/reviews/{review_id}")
 def delete_review(review_id: str):
     reviews = load_reviews()
-    updated_reviews = [r for r in reviews if r["id"] != review_id]
+    updated_reviews = [r for r in reviews if r.get("id") != review_id]
     if len(updated_reviews) == len(reviews):
         raise HTTPException(status_code=404, detail="Отзыв не найден")
     save_reviews(updated_reviews)
