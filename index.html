@@ -105,7 +105,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        /* Capsule Nav Style from Screenshot */
+        /* Capsule Nav Style */
         .nav-capsule {
             background: rgba(26, 28, 35, 0.65);
             backdrop-filter: blur(25px) saturate(180%);
@@ -613,23 +613,10 @@
         let currentReviewFilter = 'all';
         let sharedReviews = [];
 
-        function setReviewFilter(filter) {
-            currentReviewFilter = filter;
-            ['all', 'with-photo', 'without-photo'].forEach(f => {
-                const btn = document.getElementById(`filter-${f}`);
-                if (!btn) return;
-                if (f === filter) {
-                    btn.className = "px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all";
-                } else {
-                    btn.className = "px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
-                }
-            });
-            renderReviews();
-        }
-
         function loadReviews() {
             try {
-                const data = localStorage.getItem('modress_global_reviews_v4');
+                // Универсальный общий ключ синхронизации для всех клиентов
+                const data = localStorage.getItem('modress_global_reviews_v5');
                 if (data) {
                     sharedReviews = JSON.parse(data);
                 } else {
@@ -643,17 +630,13 @@
 
         function saveAndBroadcastReviews(reviews) {
             sharedReviews = reviews;
-            localStorage.setItem('modress_global_reviews_v4', JSON.stringify(reviews));
+            localStorage.setItem('modress_global_reviews_v5', JSON.stringify(reviews));
             window.dispatchEvent(new Event('storage'));
             renderReviews();
         }
 
         window.addEventListener('storage', () => {
-            try {
-                const data = localStorage.getItem('modress_global_reviews_v4');
-                if (data) sharedReviews = JSON.parse(data);
-                renderReviews();
-            } catch(e) {}
+            loadReviews();
         });
 
         function renderReviews() {
@@ -806,7 +789,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             loadReviews();
-            setInterval(loadReviews, 1500);
+            setInterval(loadReviews, 1000); // Синхронизация каждую секунду
         });
     </script>
 </body>
