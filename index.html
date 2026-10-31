@@ -12,9 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Firebase SDK (Compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -42,7 +39,7 @@
             font-size: 16px;
         }
 
-        /* Fast and Prominent Liquid Glass Background Blobs (Fast Animation) */
+        /* Fast and Prominent Liquid Glass Background Blobs */
         .bg-glow-container {
             position: fixed;
             top: 0;
@@ -351,7 +348,7 @@
 
                 <!-- Сетка отзывов -->
                 <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Заполняется динамически из базы Firebase -->
+                    <!-- Заполняется динамически -->
                 </div>
             </section>
 
@@ -477,25 +474,6 @@
     </div>
 
     <script>
-        // Инициализация Firebase (Общая облачная база данных для всех пользователей в реальном времени)
-        const firebaseConfig = {
-            apiKey: "AIzaSyD-MockKeyForDemoModressApp12345",
-            authDomain: "modress-reviews.firebaseapp.com",
-            projectId: "modress-reviews",
-            storageBucket: "modress-reviews.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef12345678"
-        };
-        
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-        } catch(e) {
-            console.error("Firebase init error", e);
-        }
-        const db = firebase.firestore();
-
         let tg = window.Telegram?.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
 
@@ -519,7 +497,7 @@
             }
         }
 
-        // Проверка администраторских прав: удаление доступно ТОЛЬКО @neleron и @neleronbot
+        // Права администратора строго для @neleron / @neleronbot
         let isAdmin = currentUsername === 'neleron' || currentUsername === 'neleronbot';
 
         document.getElementById('rev-name').value = userName;
@@ -596,7 +574,6 @@
         }
 
         let currentReviewFilter = 'all';
-        let cachedReviews = [];
 
         function setReviewFilter(filter) {
             currentReviewFilter = filter;
@@ -612,33 +589,32 @@
             renderReviews();
         }
 
-        // Загрузка отзывов в реальном времени из Firestore
-        function initReviewsListener() {
-            db.collection("modress_reviews").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
-                cachedReviews = [];
-                snapshot.forEach((doc) => {
-                    cachedReviews.push({ id: doc.id, ...doc.data() });
-                });
-                renderReviews();
-            }, (error) => {
-                console.error("Firestore sync error:", error);
-            });
+        function getReviews() {
+            const saved = localStorage.getItem('modress_pro_reviews');
+            if (!saved) return [];
+            try { return JSON.parse(saved); } catch(e) { return []; }
+        }
+
+        function saveReviews(reviews) {
+            localStorage.setItem('modress_pro_reviews', JSON.stringify(reviews));
+            renderReviews();
         }
 
         function renderReviews() {
             const list = document.getElementById('reviews-container');
             if (!list) return;
 
+            const reviews = getReviews();
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
 
-            const withPhoto = cachedReviews.filter(r => r.image && r.image.trim() !== '');
-            const withoutPhoto = cachedReviews.filter(r => !r.image || r.image.trim() === '');
+            const withPhoto = reviews.filter(r => r.image && r.image.trim() !== '');
+            const withoutPhoto = reviews.filter(r => !r.image || r.image.trim() === '');
 
-            document.getElementById('count-all').textContent = cachedReviews.length;
+            document.getElementById('count-all').textContent = reviews.length;
             document.getElementById('count-photo').textContent = withPhoto.length;
             document.getElementById('count-nophoto').textContent = withoutPhoto.length;
 
-            let targetReviews = cachedReviews;
+            let targetReviews = reviews;
             if (currentReviewFilter === 'with-photo') targetReviews = withPhoto;
             if (currentReviewFilter === 'without-photo') targetReviews = withoutPhoto;
 
@@ -654,7 +630,7 @@
                 return;
             }
 
-            list.innerHTML = targetReviews.map((r) => {
+            list.innerHTML = targetReviews.map((r, index) => {
                 let starsHtml = '';
                 for (let i = 1; i <= 5; i++) {
                     starsHtml += `<span class="${i <= r.rating ? 'text-yellow-400' : 'text-gray-700'} text-sm">★</span>`;
@@ -666,9 +642,9 @@
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
-                // Кнопка удаления отображается СТРОГО для администратора
+                // Кнопка удаления видна ТОЛЬКО администратору
                 let deleteBtnHtml = isAdmin ? `
-                    <button onclick="deleteReview('${r.id}')" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
+                    <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
                         Удалить ✕
                     </button>
                 ` : '';
@@ -699,13 +675,10 @@
             }).join('');
         }
 
-        async function deleteReview(docId) {
-            if (!isAdmin) return;
-            try {
-                await db.collection("modress_reviews").doc(docId).delete();
-            } catch(e) {
-                console.error("Error deleting review:", e);
-            }
+        function deleteReview(index) {
+            const reviews = getReviews();
+            reviews.splice(index, 1);
+            saveReviews(reviews);
         }
 
         function openReviewModal() {
@@ -742,20 +715,19 @@
             const link = userLink || "https://t.me/neleron";
             const photo = userPhoto || "";
 
-            const saveReviewToFirebase = async (imageUrl = '') => {
-                try {
-                    await db.collection("modress_reviews").add({
-                        name,
-                        link,
-                        photo,
-                        rating: currentRating || 5,
-                        text,
-                        image: imageUrl,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                } catch(e) {
-                    console.error("Firebase save error", e);
-                }
+            const saveReviewData = (imageUrl = '') => {
+                const newReview = {
+                    name,
+                    link,
+                    photo,
+                    rating: currentRating || 5,
+                    text,
+                    image: imageUrl
+                };
+
+                const reviews = getReviews();
+                reviews.unshift(newReview);
+                saveReviews(reviews);
 
                 if (textInput) textInput.value = '';
                 if (fileInput) fileInput.value = '';
@@ -763,21 +735,23 @@
                 if (fileNameLabel) fileNameLabel.textContent = 'Выбрать медиафайл';
                 currentRating = 5;
 
+                // Автоматически закрываем модальное окно и перенаправляем на вкладку отзывов
                 closeReviewModal();
+                switchTab('reviews');
             };
 
             if (fileInput && fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) { saveReviewToFirebase(e.target.result); };
-                reader.onerror = function() { saveReviewToFirebase(''); };
+                reader.onload = function(e) { saveReviewData(e.target.result); };
+                reader.onerror = function() { saveReviewData(''); };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                saveReviewToFirebase('');
+                saveReviewData('');
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            initReviewsListener();
+            renderReviews();
         });
     </script>
 </body>
