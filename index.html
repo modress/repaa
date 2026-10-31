@@ -752,7 +752,7 @@ async function fetchReviews() {
 // И в блоке инициализации при старте страницы вызывай её так:
 fetchReviews();
             // Автоматическое обновление каждые 3 секунды, чтобы подтягивать чужие отзывы
-            setInterval(fetchReviewsFromServer, 3000);
+            setInterval(fetchReviews, 3000);
         });
     </script>
 </body>
