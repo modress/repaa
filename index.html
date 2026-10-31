@@ -105,13 +105,29 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
+        /* Capsule Nav Style from Screenshot */
+        .nav-capsule {
+            background: rgba(26, 28, 35, 0.65);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-btn {
+            color: #9ca3af;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-btn:hover {
+            color: #ffffff;
+        }
         .nav-btn.active {
-            background: rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.18);
             backdrop-filter: blur(12px);
             color: #ffffff;
             font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.4);
         }
 
         @keyframes slideFadeIn {
@@ -170,8 +186,8 @@
 
         <!-- Top Navigation Header -->
         <header class="sticky top-0 z-40 top-navbar px-4 py-3.5">
-            <div class="max-w-3xl mx-auto flex items-center justify-between">
-                <div class="flex items-center gap-3.5 cursor-pointer" onclick="switchTab('hero')">
+            <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5 cursor-pointer shrink-0" onclick="switchTab('hero')">
                     <div class="w-10 h-10 rounded-2xl bg-white text-black font-extrabold flex items-center justify-center text-sm font-mono shadow-lg">
                         M
                     </div>
@@ -181,16 +197,16 @@
                     </div>
                 </div>
 
-                <!-- Desktop Nav -->
-                <nav class="hidden md:flex items-center gap-2 text-sm font-medium bg-white/5 p-1.5 rounded-full border border-white/10 backdrop-blur-xl">
-                    <button onclick="switchTab('hero')" id="tab-hero" class="nav-btn active px-4 py-2 rounded-full text-gray-300 transition-all">Главная</button>
-                    <button onclick="switchTab('about')" id="tab-about" class="nav-btn px-4 py-2 rounded-full text-gray-400 hover:text-white transition-all">О мне</button>
-                    <button onclick="switchTab('price')" id="tab-price" class="nav-btn px-4 py-2 rounded-full text-gray-400 hover:text-white transition-all">Прайс</button>
-                    <button onclick="switchTab('reviews')" id="tab-reviews" class="nav-btn px-4 py-2 rounded-full text-gray-400 hover:text-white transition-all">Отзывы</button>
-                    <button onclick="switchTab('contact')" id="tab-contact" class="nav-btn px-4 py-2 rounded-full text-gray-400 hover:text-white transition-all">Связь</button>
+                <!-- Capsule Nav Bar -->
+                <nav class="hidden md:flex items-center gap-1 p-1.5 rounded-full nav-capsule">
+                    <button onclick="switchTab('hero')" id="tab-hero" class="nav-btn active px-4 py-2 rounded-full text-xs font-medium transition-all">Главная</button>
+                    <button onclick="switchTab('about')" id="tab-about" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">О мне</button>
+                    <button onclick="switchTab('price')" id="tab-price" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">Прайс</button>
+                    <button onclick="switchTab('reviews')" id="tab-reviews" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">Отзывы</button>
+                    <button onclick="switchTab('contact')" id="tab-contact" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">Связь</button>
                 </nav>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 shrink-0">
                     <button onclick="tgOpen('https://t.me/neleron')" class="flex items-center gap-2 bg-white hover:bg-gray-200 text-black text-xs font-bold px-5 py-3 rounded-full transition-all shadow-xl">
                         Написать @neleron
                     </button>
@@ -198,8 +214,19 @@
             </div>
         </header>
 
+        <!-- Mobile Capsule Nav Bar -->
+        <div class="md:hidden px-4 pt-3">
+            <nav class="flex items-center justify-between p-1.5 rounded-full nav-capsule overflow-x-auto">
+                <button onclick="switchTab('hero')" id="mob-tab-hero" class="nav-btn active px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Главная</button>
+                <button onclick="switchTab('about')" id="mob-tab-about" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">О мне</button>
+                <button onclick="switchTab('price')" id="mob-tab-price" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Прайс</button>
+                <button onclick="switchTab('reviews')" id="mob-tab-reviews" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Отзывы</button>
+                <button onclick="switchTab('contact')" id="mob-tab-contact" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Связь</button>
+            </nav>
+        </div>
+
         <!-- Main Body Content -->
-        <main class="max-w-2xl mx-auto px-4 pt-8 flex-1 w-full">
+        <main class="max-w-2xl mx-auto px-4 pt-6 flex-1 w-full">
 
             <!-- SECTION 1: HERO -->
             <section id="sec-hero" class="space-y-6 anim-in">
@@ -348,7 +375,7 @@
 
                 <!-- Сетка отзывов -->
                 <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Заполняется динамически из облака -->
+                    <!-- Заполняется динамически -->
                 </div>
             </section>
 
@@ -554,9 +581,19 @@
                 activeSec.classList.add('anim-in');
             }
 
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            const dBtn = document.getElementById(`tab-${tabId}`);
-            if (dBtn) dBtn.classList.add('active');
+            // Обновляем состояние десктопных и мобильных кнопок капсулы
+            ['hero', 'about', 'price', 'reviews', 'contact'].forEach(s => {
+                const dBtn = document.getElementById(`tab-${s}`);
+                const mBtn = document.getElementById(`mob-tab-${s}`);
+                if (dBtn) {
+                    if (s === tabId) dBtn.classList.add('active');
+                    else dBtn.classList.remove('active');
+                }
+                if (mBtn) {
+                    if (s === tabId) mBtn.classList.add('active');
+                    else mBtn.classList.remove('active');
+                }
+            });
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -574,7 +611,7 @@
         }
 
         let currentReviewFilter = 'all';
-        let cloudReviews = [];
+        let sharedReviews = [];
 
         function setReviewFilter(filter) {
             currentReviewFilter = filter;
@@ -590,36 +627,33 @@
             renderReviews();
         }
 
-        // Облачная синхронизация через публичный JSONbin бэкенд
-        const BIN_ID = "678e359ead19ca34f8ed5342";
-        const API_KEY = "$2a$10$QvK...mock...key...sync"; // Публичный общий доступ
-
-        async function fetchReviews() {
+        function loadReviews() {
             try {
-                // Используем надежное публичное хранилище для общих отзывов всех пользователей
-                const saved = localStorage.getItem('modress_cloud_sync_v2');
-                if (saved) {
-                    cloudReviews = JSON.parse(saved);
+                const data = localStorage.getItem('modress_global_reviews_v4');
+                if (data) {
+                    sharedReviews = JSON.parse(data);
+                } else {
+                    sharedReviews = [];
                 }
-                renderReviews();
             } catch(e) {
-                console.error("Fetch error", e);
+                sharedReviews = [];
             }
-        }
-
-        function saveCloudReviews(reviews) {
-            cloudReviews = reviews;
-            localStorage.setItem('modress_cloud_sync_v2', JSON.stringify(reviews));
-            // Дублируем в глобальный localStorage для симуляции синхронизации между вкладками
-            localStorage.setItem('modress_pro_reviews', JSON.stringify(reviews));
             renderReviews();
         }
 
-        // Авто-опрос каждые 2 секунды для мгновенного отображения отзывов от других пользователей
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'modress_pro_reviews' || e.key === 'modress_cloud_sync_v2') {
-                fetchReviews();
-            }
+        function saveAndBroadcastReviews(reviews) {
+            sharedReviews = reviews;
+            localStorage.setItem('modress_global_reviews_v4', JSON.stringify(reviews));
+            window.dispatchEvent(new Event('storage'));
+            renderReviews();
+        }
+
+        window.addEventListener('storage', () => {
+            try {
+                const data = localStorage.getItem('modress_global_reviews_v4');
+                if (data) sharedReviews = JSON.parse(data);
+                renderReviews();
+            } catch(e) {}
         });
 
         function renderReviews() {
@@ -628,14 +662,14 @@
 
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
 
-            const withPhoto = cloudReviews.filter(r => r.image && r.image.trim() !== '');
-            const withoutPhoto = cloudReviews.filter(r => !r.image || r.image.trim() === '');
+            const withPhoto = sharedReviews.filter(r => r.image && r.image.trim() !== '');
+            const withoutPhoto = sharedReviews.filter(r => !r.image || r.image.trim() === '');
 
-            document.getElementById('count-all').textContent = cloudReviews.length;
+            document.getElementById('count-all').textContent = sharedReviews.length;
             document.getElementById('count-photo').textContent = withPhoto.length;
             document.getElementById('count-nophoto').textContent = withoutPhoto.length;
 
-            let targetReviews = cloudReviews;
+            let targetReviews = sharedReviews;
             if (currentReviewFilter === 'with-photo') targetReviews = withPhoto;
             if (currentReviewFilter === 'without-photo') targetReviews = withoutPhoto;
 
@@ -697,9 +731,9 @@
         }
 
         function deleteReview(index) {
-            const reviews = [...cloudReviews];
+            const reviews = [...sharedReviews];
             reviews.splice(index, 1);
-            saveCloudReviews(reviews);
+            saveAndBroadcastReviews(reviews);
         }
 
         function openReviewModal() {
@@ -746,9 +780,9 @@
                     image: imageUrl
                 };
 
-                const reviews = [...cloudReviews];
+                const reviews = [...sharedReviews];
                 reviews.unshift(newReview);
-                saveCloudReviews(reviews);
+                saveAndBroadcastReviews(reviews);
 
                 if (textInput) textInput.value = '';
                 if (fileInput) fileInput.value = '';
@@ -756,7 +790,6 @@
                 if (fileNameLabel) fileNameLabel.textContent = 'Выбрать медиафайл';
                 currentRating = 5;
 
-                // Закрываем модальное окно и сразу перенаправляем на вкладку отзывов
                 closeReviewModal();
                 switchTab('reviews');
             };
@@ -772,8 +805,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            fetchReviews();
-            setInterval(fetchReviews, 2000); // Синхронизация каждые 2 секунды
+            loadReviews();
+            setInterval(loadReviews, 1500);
         });
     </script>
 </body>
