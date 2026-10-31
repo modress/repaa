@@ -581,7 +581,6 @@
                 activeSec.classList.add('anim-in');
             }
 
-            // Обновляем состояние десктопных и мобильных кнопок капсулы
             ['hero', 'about', 'price', 'reviews', 'contact'].forEach(s => {
                 const dBtn = document.getElementById(`tab-${s}`);
                 const mBtn = document.getElementById(`mob-tab-${s}`);
@@ -611,48 +610,50 @@
         }
 
         let currentReviewFilter = 'all';
-        let sharedReviews = [];
 
-        function loadReviews() {
+        function getReviews() {
             try {
-                // Универсальный общий ключ синхронизации для всех клиентов
-                const data = localStorage.getItem('modress_global_reviews_v5');
-                if (data) {
-                    sharedReviews = JSON.parse(data);
-                } else {
-                    sharedReviews = [];
-                }
+                const data = localStorage.getItem('modress_master_reviews_v6');
+                return data ? JSON.parse(data) : [];
             } catch(e) {
-                sharedReviews = [];
+                return [];
             }
+        }
+
+        function saveReviews(reviews) {
+            localStorage.setItem('modress_master_reviews_v6', JSON.stringify(reviews));
             renderReviews();
         }
 
-        function saveAndBroadcastReviews(reviews) {
-            sharedReviews = reviews;
-            localStorage.setItem('modress_global_reviews_v5', JSON.stringify(reviews));
-            window.dispatchEvent(new Event('storage'));
+        function setReviewFilter(filter) {
+            currentReviewFilter = filter;
+            ['all', 'with-photo', 'without-photo'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (!btn) return;
+                if (f === filter) {
+                    btn.className = "px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all";
+                } else {
+                    btn.className = "px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
+                }
+            });
             renderReviews();
         }
-
-        window.addEventListener('storage', () => {
-            loadReviews();
-        });
 
         function renderReviews() {
             const list = document.getElementById('reviews-container');
             if (!list) return;
 
+            const reviews = getReviews();
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
 
-            const withPhoto = sharedReviews.filter(r => r.image && r.image.trim() !== '');
-            const withoutPhoto = sharedReviews.filter(r => !r.image || r.image.trim() === '');
+            const withPhoto = reviews.filter(r => r.image && r.image.trim() !== '');
+            const withoutPhoto = reviews.filter(r => !r.image || r.image.trim() === '');
 
-            document.getElementById('count-all').textContent = sharedReviews.length;
+            document.getElementById('count-all').textContent = reviews.length;
             document.getElementById('count-photo').textContent = withPhoto.length;
             document.getElementById('count-nophoto').textContent = withoutPhoto.length;
 
-            let targetReviews = sharedReviews;
+            let targetReviews = reviews;
             if (currentReviewFilter === 'with-photo') targetReviews = withPhoto;
             if (currentReviewFilter === 'without-photo') targetReviews = withoutPhoto;
 
@@ -680,7 +681,6 @@
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
-                // Кнопка удаления видна СТРОГО администратору (@neleron)
                 let deleteBtnHtml = isAdmin ? `
                     <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
                         Удалить ✕
@@ -714,9 +714,9 @@
         }
 
         function deleteReview(index) {
-            const reviews = [...sharedReviews];
+            const reviews = getReviews();
             reviews.splice(index, 1);
-            saveAndBroadcastReviews(reviews);
+            saveReviews(reviews);
         }
 
         function openReviewModal() {
@@ -763,9 +763,9 @@
                     image: imageUrl
                 };
 
-                const reviews = [...sharedReviews];
+                const reviews = getReviews();
                 reviews.unshift(newReview);
-                saveAndBroadcastReviews(reviews);
+                saveReviews(reviews);
 
                 if (textInput) textInput.value = '';
                 if (fileInput) fileInput.value = '';
@@ -788,8 +788,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadReviews();
-            setInterval(loadReviews, 1000); // Синхронизация каждую секунду
+            renderReviews();
+            setInterval(renderReviews, 1000);
         });
     </script>
 </body>
