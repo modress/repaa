@@ -103,14 +103,14 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
-        /* Modern Modern Liquid Dock Bottom Navigation */
+        /* Modern Liquid Dock Bottom Navigation with Rounded Pill Corners */
         .modern-bottom-dock {
-            background: rgba(18, 20, 26, 0.65);
-            backdrop-filter: blur(32px) saturate(210%);
-            -webkit-backdrop-filter: blur(32px) saturate(210%);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            background: rgba(18, 20, 26, 0.75);
+            backdrop-filter: blur(35px) saturate(210%);
+            -webkit-backdrop-filter: blur(35px) saturate(210%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+            border-radius: 9999px;
         }
 
         .nav-btn.active {
@@ -211,9 +211,14 @@
                     <button onclick="switchTab('contact')" id="tab-contact" class="nav-btn px-4 py-2.5 rounded-2xl text-gray-400 hover:text-white transition-all">Связь</button>
                 </nav>
 
-                <button onclick="tgOpen('https://t.me/neleron')" class="hidden sm:flex items-center gap-2 bg-white hover:bg-gray-200 text-black text-xs font-bold px-5 py-3 rounded-2xl transition-all shadow-lg">
-                    Написать @neleron
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleAdminMode()" id="admin-toggle-btn" class="text-[10px] font-mono px-3 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-gray-300 transition-all">
+                        🔑 Админ: ВЫКЛ
+                    </button>
+                    <button onclick="tgOpen('https://t.me/neleron')" class="hidden sm:flex items-center gap-2 bg-white hover:bg-gray-200 text-black text-xs font-bold px-5 py-3 rounded-2xl transition-all shadow-lg">
+                        Написать @neleron
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -426,33 +431,33 @@
                     </div>
 
         <!-- Mobile Floating Glass Navigation Bar -->
-        <div class="md:hidden fixed bottom-4 left-3 right-3 z-50">
-            <div class="modern-bottom-dock rounded-3xl p-2 px-1">
+        <div class="md:hidden fixed bottom-5 left-4 right-4 z-50">
+            <div class="modern-bottom-dock px-3 py-2">
                 <div class="flex items-center justify-around text-xs font-medium">
-                    <button onclick="switchTab('hero')" id="mtab-hero" class="mobile-nav-btn active flex flex-col items-center gap-1 py-1 px-2 text-gray-400 hover:text-white rounded-2xl">
+                    <button onclick="switchTab('hero')" id="mtab-hero" class="mobile-nav-btn active flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
                         <span class="tab-icon text-base transition-transform">🏠</span>
                         <span class="text-[10px] tracking-tight font-mono">Главная</span>
-                        <span class="active-indicator absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
+                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
                     </button>
-                    <button onclick="switchTab('about')" id="mtab-about" class="mobile-nav-btn flex flex-col items-center gap-1 py-1 px-2 text-gray-400 hover:text-white rounded-2xl">
+                    <button onclick="switchTab('about')" id="mtab-about" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
                         <span class="tab-icon text-base transition-transform">👤</span>
                         <span class="text-[10px] tracking-tight font-mono">О мне</span>
-                        <span class="active-indicator absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
+                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
                     </button>
-                    <button onclick="switchTab('price')" id="mtab-price" class="mobile-nav-btn flex flex-col items-center gap-1 py-1 px-2 text-gray-400 hover:text-white rounded-2xl">
+                    <button onclick="switchTab('price')" id="mtab-price" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
                         <span class="tab-icon text-base transition-transform">💎</span>
                         <span class="text-[10px] tracking-tight font-mono">Прайс</span>
-                        <span class="active-indicator absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
+                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
                     </button>
-                    <button onclick="switchTab('reviews')" id="mtab-reviews" class="mobile-nav-btn flex flex-col items-center gap-1 py-1 px-2 text-gray-400 hover:text-white rounded-2xl">
+                    <button onclick="switchTab('reviews')" id="mtab-reviews" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
                         <span class="tab-icon text-base transition-transform">⭐</span>
                         <span class="text-[10px] tracking-tight font-mono">Отзывы</span>
-                        <span class="active-indicator absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
+                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
                     </button>
-                    <button onclick="switchTab('contact')" id="mtab-contact" class="mobile-nav-btn flex flex-col items-center gap-1 py-1 px-2 text-gray-400 hover:text-white rounded-2xl">
+                    <button onclick="switchTab('contact')" id="mtab-contact" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
                         <span class="tab-icon text-base transition-transform">✉️</span>
                         <span class="text-[10px] tracking-tight font-mono">Связь</span>
-                        <span class="active-indicator absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
+                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
                     </button>
                 </div>
             </div>
@@ -467,7 +472,7 @@
         let userName = "Клиент";
         let userLink = "https://t.me/neleron";
         let userPhoto = "";
-        let currentUsername = ""; // Идентификатор текущего пользователя
+        let currentUsername = ""; 
 
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
@@ -484,9 +489,21 @@
             }
         }
 
-        // Вы admin (по аккаунту @neleron)
-        const ADMIN_USERNAME = 'neleron';
-        const isAdmin = currentUsername === ADMIN_USERNAME;
+        // Авто-определение администратора или ручной тумблер
+        let isAdmin = currentUsername === 'neleron' || currentUsername === 'neleronbot';
+
+        function toggleAdminMode() {
+            isAdmin = !isAdmin;
+            const btn = document.getElementById('admin-toggle-btn');
+            if (isAdmin) {
+                btn.textContent = "🔑 Админ: ВКЛ";
+                btn.className = "text-[10px] font-mono px-3 py-2 rounded-xl border border-red-500/50 bg-red-500/20 text-red-300 font-bold transition-all";
+            } else {
+                btn.textContent = "🔑 Админ: ВЫКЛ";
+                btn.className = "text-[10px] font-mono px-3 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-gray-300 transition-all";
+            }
+            renderReviews();
+        }
 
         document.getElementById('rev-name').value = userName;
         document.getElementById('rev-link').value = userLink;
@@ -602,13 +619,13 @@
 
                 let avatarHtml = r.photo 
                     ? `<img src="${r.photo}" class="w-full h-full object-cover">` 
-                    : `<span class="text-sm font-bold text-white font-mono">${r.name.charAt(0).toUpperCase()}</span>`;
+                    : `<span class="text-sm font-bold text-white font-mono">${(r.name || 'C').charAt(0).toUpperCase()}</span>`;
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
-                // Кнопка удаления отображается только администратору (@neleron)
+                // Кнопка удаления отображается администратору
                 let deleteBtnHtml = isAdmin ? `
-                    <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded-lg transition-all border border-red-500/20">
+                    <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-2.5 py-1 rounded-xl transition-all border border-red-500/30">
                         Удалить ✕
                     </button>
                 ` : '';
