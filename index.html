@@ -1,761 +1,315 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Modress — Full-Stack & Telegram Dev</title>
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
+    <title>Modress — Telegram Mini App & Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        canvas: '#111215',
-                        panel: '#1a1c23',
-                        cardbg: 'rgba(26, 28, 35, 0.75)',
-                        lineborder: 'rgba(255, 255, 255, 0.08)',
-                    },
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-deep: #060810;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(59, 130, 246, 0.2);
+        }
+
         body {
-            background-color: #111215;
-            color: #f3f4f6;
+            background-color: var(--bg-deep);
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            font-size: 16px;
         }
 
-        .bg-glow-container {
+        /* iOS Liquid Glass Card */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        .glass-input {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+        }
+        .glass-input:focus {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Динамические переливания фона (минимализм бэкграунда) */
+        .ambient-blob {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .glow-blob {
-            position: absolute;
-            border-radius: 50%;
+            width: 320px;
+            height: 320px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.18) 0%, rgba(147, 51, 234, 0.08) 100%);
             filter: blur(80px);
-            opacity: 0.85;
-            mix-blend-mode: screen;
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+            animation: drift 14s ease-in-out infinite alternate;
+        }
+        .ambient-blob-2 {
+            position: fixed;
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(16, 185, 129, 0.05) 100%);
+            filter: blur(70px);
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+            animation: drift-rev 18s ease-in-out infinite alternate;
         }
 
-        .blob-1 {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, #ffffff 0%, #4b5563 50%, transparent 100%);
-            top: -150px;
-            left: -150px;
-            animation: floatBlob1 1.4s infinite ease-in-out alternate;
+        @keyframes drift {
+            0% { transform: translate(-30px, -20px) scale(1); }
+            100% { transform: translate(40px, 60px) scale(1.15); }
+        }
+        @keyframes drift-rev {
+            0% { transform: translate(40px, 30px) scale(1.1); }
+            100% { transform: translate(-50px, -40px) scale(0.95); }
         }
 
-        .blob-2 {
-            width: 650px;
-            height: 650px;
-            background: radial-gradient(circle, #d1d5db 0%, #1f2937 60%, transparent 100%);
-            bottom: -150px;
-            right: -150px;
-            animation: floatBlob2 1.7s infinite ease-in-out alternate;
+        /* Стилизованный скроллбар */
+        ::-webkit-scrollbar {
+            width: 4px;
         }
-
-        @keyframes floatBlob1 {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(380px, 400px) scale(1.5) rotate(45deg); }
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
-        @keyframes floatBlob2 {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(-400px, -350px) scale(1.45) rotate(-45deg); }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
         }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(40px) saturate(200%);
-            -webkit-backdrop-filter: blur(40px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-            border-radius: 32px;
-        }
-
-        .top-navbar {
-            background: rgba(17, 18, 21, 0.15);
-            backdrop-filter: blur(40px) saturate(220%);
-            -webkit-backdrop-filter: blur(40px) saturate(220%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-capsule {
-            background: rgba(26, 28, 35, 0.65);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-        }
-
-        .nav-btn {
-            color: #9ca3af;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .nav-btn:hover {
-            color: #ffffff;
-        }
-        .nav-btn.active {
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(12px);
-            color: #ffffff;
-            font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-        }
-
-        @keyframes slideFadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        .anim-in {
-            animation: slideFadeIn 0.25s ease-out forwards;
-            will-change: opacity;
-        }
-
-        .contact-card {
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .contact-details {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .contact-card:hover .contact-details,
-        .contact-card.active .contact-details {
-            max-height: 420px;
-            opacity: 1;
-            margin-top: 1.25rem;
-        }
-
-        .search-input-box {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .search-input-box:hover {
-            border-color: rgba(255, 255, 255, 0.35);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.12);
-        }
-        .search-input-box:focus-within {
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #111215; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
     </style>
 </head>
-<body class="font-sans antialiased text-white min-h-screen flex flex-col justify-between selection:bg-white selection:text-black">
+<body class="p-4 max-w-md mx-auto min-h-screen pb-16 flex flex-col justify-between">
 
-    <div class="bg-glow-container">
-        <div class="glow-blob blob-1"></div>
-        <div class="glow-blob blob-2"></div>
-    </div>
+    <!-- Абстрактный фоновый свет -->
+    <div class="ambient-blob top-12 -left-16"></div>
+    <div class="ambient-blob-2 bottom-20 -right-16"></div>
 
-    <div class="relative z-10 flex flex-col min-h-screen pb-12">
-
-        <header class="sticky top-0 z-40 top-navbar px-4 py-3.5">
-            <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3.5 cursor-pointer shrink-0" onclick="switchTab('hero')">
-                    <div class="w-10 h-10 rounded-2xl bg-white text-black font-extrabold flex items-center justify-center text-sm font-mono shadow-lg">
-                        M
-                    </div>
-                    <div>
-                        <div class="font-bold text-white text-sm tracking-tight">modress.core</div>
-                        <div class="text-xs font-mono text-gray-400">telegram engineer</div>
-                    </div>
-                </div>
-
-                <nav class="hidden md:flex items-center gap-1 p-1.5 rounded-full nav-capsule">
-                    <button onclick="switchTab('hero')" id="tab-hero" class="nav-btn active px-4 py-2 rounded-full text-xs font-medium transition-all">Главная</button>
-                    <button onclick="switchTab('about')" id="tab-about" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">О мне</button>
-                    <button onclick="switchTab('price')" id="tab-price" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">Прайс</button>
-                    <button onclick="switchTab('reviews')" id="tab-reviews" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">Отзывы</button>
-                    <button onclick="switchTab('contact')" id="tab-contact" class="nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all">Связь</button>
-                </nav>
-
-                <div class="flex items-center gap-2 shrink-0">
-                    <button onclick="tgOpen('https://t.me/neleron')" class="flex items-center gap-2 bg-white hover:bg-gray-200 text-black text-xs font-bold px-5 py-3 rounded-full transition-all shadow-xl">
-                        Написать @neleron
-                    </button>
-                </div>
+    <div>
+        <!-- Шапка приложения -->
+        <header class="text-center my-6">
+            <div class="inline-block p-2 rounded-2xl glass-panel mb-2">
+                <span class="text-xs font-medium px-3 py-1 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">Modress ecosystem</span>
             </div>
+            <h1 class="text-2xl font-black bg-gradient-to-r from-blue-400 via-indigo-300 to-sky-400 bg-clip-text text-transparent">Центр Отзывов</h1>
+            <p class="text-xs text-slate-400 mt-1">Публичный хаб цифровых продуктов и разработок</p>
         </header>
 
-        <div class="md:hidden px-4 pt-3">
-            <nav class="flex items-center justify-between p-1.5 rounded-full nav-capsule overflow-x-auto">
-                <button onclick="switchTab('hero')" id="mob-tab-hero" class="nav-btn active px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Главная</button>
-                <button onclick="switchTab('about')" id="mob-tab-about" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">О мне</button>
-                <button onclick="switchTab('price')" id="mob-tab-price" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Прайс</button>
-                <button onclick="switchTab('reviews')" id="mob-tab-reviews" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Отзывы</button>
-                <button onclick="switchTab('contact')" id="mob-tab-contact" class="nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap">Связь</button>
-            </nav>
-        </div>
-
-        <main class="max-w-2xl mx-auto px-4 pt-6 flex-1 w-full">
-
-            <section id="sec-hero" class="space-y-6 anim-in">
-                <div class="glass-card p-8 md:p-12 space-y-6 text-center rounded-[36px]">
-                    <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-mono text-gray-200 mx-auto shadow-inner">
-                        <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
-                        <span>официальные отзывы клиентов</span>
-                    </div>
-
-                    <div class="space-y-4 max-w-lg mx-auto">
-                        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                            Честные отзывы о качестве моей работы.
-                        </h1>
-                        <p class="text-base md:text-lg text-gray-300 leading-relaxed">
-                            Официальный мини-апп с оценками и мнениями пользователей о созданных Telegram Mini Apps, сложных ботах, веб-сервисах и парсерах.
-                        </p>
-                    </div>
-
-                    <div class="pt-4 flex flex-wrap items-center justify-center gap-3.5">
-                        <button onclick="switchTab('reviews')" class="bg-white hover:bg-gray-200 text-black font-bold text-sm px-7 py-4 rounded-full transition-all shadow-xl active:scale-95">
-                            Читать все отзывы ⭐
-                        </button>
-                        <button onclick="openReviewModal()" class="bg-white/10 hover:bg-white/20 text-white font-bold text-sm px-7 py-4 rounded-full border border-white/20 backdrop-blur-md transition-all active:scale-95">
-                            Оставить отзыв ✍️
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="sec-about" class="hidden space-y-6 anim-in">
-                <div class="glass-card p-8 md:p-10 space-y-5">
-                    <h2 class="text-xl font-bold text-white font-mono">// О разработчике</h2>
-                    <p class="text-base text-gray-300 leading-relaxed">
-                        Меня зовут Modress. Профессионально занимаюсь разработкой ПО, созданием интеграций, ботов любой сложности и интерактивных интерфейсов. Фокусируюсь на качестве, отказоустойчивости серверов и удобстве интерфейсов.
-                    </p>
-                </div>
-            </section>
-
-            <section id="sec-price" class="hidden space-y-6 anim-in">
-                <div class="space-y-1">
-                    <h2 class="text-xl font-bold text-white font-mono">// Прайс-лист услуг</h2>
-                    <p class="text-sm text-gray-400">Фиксированная стоимость разработки проектов.</p>
+        <!-- Блок добавления отзыва -->
+        <section class="glass-panel p-5 rounded-3xl mb-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <h2 class="text-sm font-bold mb-3 text-blue-300 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                Оставить отзыв о проекте
+            </h2>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1 ml-1">Ваше имя / Ник</label>
+                    <input type="text" id="reviewName" placeholder="Например: Алексей" class="w-full glass-input rounded-2xl p-3 text-sm focus:outline-none text-white placeholder-slate-500 transition">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="glass-card p-6 flex flex-col justify-between space-y-4 rounded-[28px]">
-                        <div>
-                            <span class="text-[10px] font-mono px-3 py-1 rounded-full bg-white/10 text-gray-300 uppercase">Telegram</span>
-                            <h3 class="text-lg font-bold text-white mt-3">Telegram Бот</h3>
-                            <p class="text-sm text-gray-400 mt-1">Логика, кнопки, база данных под ключ.</p>
-                        </div>
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-white font-mono">от 1 000 ₽</div>
-                            <button onclick="tgOpen('https://t.me/neleron')" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2.5 rounded-full transition-all">Заказать</button>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-6 flex flex-col justify-between space-y-4 rounded-[28px]">
-                        <div>
-                            <span class="text-[10px] font-mono px-3 py-1 rounded-full bg-white/10 text-gray-300 uppercase">WebApp</span>
-                            <h3 class="text-lg font-bold text-white mt-3">Telegram Mini App</h3>
-                            <p class="text-sm text-gray-400 mt-1">Интерактивное веб-приложение в Telegram.</p>
-                        </div>
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-white font-mono">от 2 000 ₽</div>
-                            <button onclick="tgOpen('https://t.me/neleron')" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2.5 rounded-full transition-all">Заказать</button>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-6 flex flex-col justify-between space-y-4 rounded-[28px]">
-                        <div>
-                            <span class="text-[10px] font-mono px-3 py-1 rounded-full bg-white/10 text-gray-300 uppercase">Web Dev</span>
-                            <h3 class="text-lg font-bold text-white mt-3">Сайт / Лендинг</h3>
-                            <p class="text-sm text-gray-400 mt-1">Современный адаптивный дизайн и верстка.</p>
-                        </div>
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-white font-mono">от 5 000 ₽</div>
-                            <button onclick="tgOpen('https://t.me/neleron')" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2.5 rounded-full transition-all">Заказать</button>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-6 flex flex-col justify-between space-y-4 rounded-[28px]">
-                        <div>
-                            <span class="text-[10px] font-mono px-3 py-1 rounded-full bg-white/10 text-gray-300 uppercase">AI Service</span>
-                            <h3 class="text-lg font-bold text-white mt-3">ИИ-сервис / Бот с ИИ</h3>
-                            <p class="text-sm text-gray-400 mt-1">Интеграция ChatGPT / LLM API.</p>
-                        </div>
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-white font-mono">от 8 000 ₽</div>
-                            <button onclick="tgOpen('https://t.me/neleron')" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2.5 rounded-full transition-all">Заказать</button>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-6 flex flex-col justify-between space-y-4 rounded-[28px]">
-                        <div>
-                            <span class="text-[10px] font-mono px-3 py-1 rounded-full bg-white/10 text-gray-300 uppercase">Scripts</span>
-                            <h3 class="text-lg font-bold text-white mt-3">Парсер данных</h3>
-                            <p class="text-sm text-gray-400 mt-1">Автоматический сбор информации с сайтов.</p>
-                        </div>
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-white font-mono">от 3 000 ₽</div>
-                            <button onclick="tgOpen('https://t.me/neleron')" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2.5 rounded-full transition-all">Заказать</button>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-6 flex flex-col justify-between space-y-4 rounded-[28px]">
-                        <div>
-                            <span class="text-[10px] font-mono px-3 py-1 rounded-full bg-white/10 text-gray-300 uppercase">Automation</span>
-                            <h3 class="text-lg font-bold text-white mt-3">Трекер / Автоматизация</h3>
-                            <p class="text-sm text-gray-400 mt-1">Системы отслеживания задач и алертов.</p>
-                        </div>
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                            <div class="text-lg font-extrabold text-white font-mono">от 2 000 ₽</div>
-                            <button onclick="tgOpen('https://t.me/neleron')" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2.5 rounded-full transition-all">Заказать</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="sec-reviews" class="hidden space-y-6 anim-in">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-xl font-bold text-white font-mono">// Отзывы клиентов</h2>
-                        <p class="text-sm text-gray-400">Все отзывы реальных пользователей и заказчиков.</p>
-                    </div>
-                    <button onclick="openReviewModal()" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-5 py-3.5 rounded-full transition-all shadow-lg shrink-0 active:scale-95">
-                        + Написать отзыв
-                    </button>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1 ml-1">Текст отзыва</label>
+                    <textarea id="reviewText" rows="3" placeholder="Опишите ваш опыт сотрудничества..." class="w-full glass-input rounded-2xl p-3 text-sm focus:outline-none text-white placeholder-slate-500 transition resize-none"></textarea>
                 </div>
 
-                <div class="search-input-box glass-card px-4 py-3.5 flex items-center gap-3 rounded-[24px]">
-                    <span class="text-gray-400 text-base">🔍</span>
-                    <input type="text" id="review-search" oninput="renderReviews()" placeholder="Поиск по отзывам или именам клиентов..." class="w-full bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none font-sans">
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1 ml-1">Медиа материал (опционально)</label>
+                    <label class="flex items-center justify-between w-full px-4 py-3 glass-input rounded-2xl cursor-pointer hover:bg-slate-800/40 transition text-xs text-slate-300 border border-slate-700/50">
+                        <span id="fileLabel" class="truncate pr-2">Прикрепить скриншот или фото</span>
+                        <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <input type="file" id="reviewImage" accept="image/*" class="hidden" onchange="handleImage(this)">
+                    </label>
                 </div>
 
-                <div class="flex items-center gap-1.5 p-1.5 glass-card rounded-full w-fit">
-                    <button onclick="setReviewFilter('all')" id="filter-all" class="px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all">Все (<span id="count-all">0</span>)</button>
-                    <button onclick="setReviewFilter('with-photo')" id="filter-with-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">📷 С фото (<span id="count-photo">0</span>)</button>
-                    <button onclick="setReviewFilter('without-photo')" id="filter-without-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">💬 Без фото (<span id="count-nophoto">0</span>)</button>
-                </div>
+                <button onclick="submitReview()" class="w-full mt-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3.5 rounded-2xl transition text-sm shadow-lg shadow-blue-500/25 active:scale-[0.98]">
+                    Опубликовать отзыв
+                </button>
+            </div>
+        </section>
 
-                <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Загружается с бэкенда -->
-                </div>
-            </section>
-
-            <section id="sec-contact" class="hidden space-y-6 anim-in">
-                <div class="glass-card p-8 md:p-10 space-y-6 rounded-[36px]">
-                    <h2 class="text-xl font-bold text-white font-mono">// Контакты</h2>
-                    <p class="text-base text-gray-300">Наведите или нажмите на карточку ниже, чтобы связаться и узнать подробности:</p>
-                    
-                    <div onclick="toggleContactCard(this)" onmouseenter="this.classList.add('active')" onmouseleave="this.classList.remove('active')" class="contact-card glass-card p-6 border border-white/20 cursor-pointer bg-white/5 hover:bg-white/10 transition-all rounded-[28px]">
-                        <div class="flex items-center justify-between gap-3">
-                            <div>
-                                <div class="text-[11px] text-gray-400 font-mono uppercase tracking-wider">Официальный прямой диалог</div>
-                                <div class="text-lg font-extrabold text-white font-sans mt-1">Связаться напрямую / Открыть чат ↗</div>
-                            </div>
-                            <span class="text-xs text-gray-400 font-mono underline shrink-0">нажми / наведи ↓</span>
-                        </div>
-
-                        <div class="contact-details space-y-4 pt-4 border-t border-white/10 font-mono text-xs">
-                            <div class="space-y-1">
-                                <span class="text-gray-400 text-[11px]">КТО Я:</span>
-                                <p class="text-white font-sans text-sm">Full-Stack разработчик и инженер архитектуры ботов. Создаю сложные проекты с нуля под ключ.</p>
-                            </div>
-                            <div class="space-y-1">
-                                <span class="text-gray-400 text-[11px]">ЧТО СОЗДАЮ:</span>
-                                <p class="text-white font-sans text-sm">Telegram Mini Apps, боты любой сложности, веб-сайты, парсеры данных и ИИ-ассистенты.</p>
-                            </div>
-                            <div class="space-y-1">
-                                <span class="text-gray-400 text-[11px]">СТЕК ЯЗЫКОВ:</span>
-                                <div class="flex flex-wrap gap-1.5 pt-1">
-                                    <span class="px-3 py-1 rounded-full bg-white/10 text-white text-[11px]">Python</span>
-                                    <span class="px-3 py-1 rounded-full bg-white/10 text-white text-[11px]">JavaScript</span>
-                                    <span class="px-3 py-1 rounded-full bg-white/10 text-white text-[11px]">TypeScript</span>
-                                    <span class="px-3 py-1 rounded-full bg-white/10 text-white text-[11px]">HTML/CSS</span>
-                                    <span class="px-3 py-1 rounded-full bg-white/10 text-white text-[11px]">SQL</span>
-                                </div>
-                            </div>
-                            <button onclick="event.stopPropagation(); tgOpen('https://t.me/neleron')" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-full text-xs transition-all shadow-md font-sans">
-                                Отправить сообщение в Telegram ↗
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-
-        <div id="review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all" onclick="if(event.target === this) closeReviewModal()">
-            <div class="w-full max-w-lg bg-[#1c1c1e] sm:bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-t-[36px] sm:rounded-[32px] p-6 sm:p-7 space-y-5 border border-white/15 shadow-2xl anim-in relative max-h-[90vh] overflow-y-auto">
-                
-                <div class="w-10 h-1 bg-white/30 rounded-full mx-auto sm:hidden mb-1"></div>
-
-                <div class="flex items-center justify-between pb-3 border-b border-white/10">
-                    <div>
-                        <h3 class="text-lg font-bold text-white tracking-tight">Новый отзыв</h3>
-                        <p class="text-xs text-gray-400">Поделитесь впечатлениями о сотрудничестве</p>
-                    </div>
-                    <button type="button" onclick="closeReviewModal()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white font-semibold text-sm transition-all active:scale-90">✕</button>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3">
-                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-white font-mono overflow-hidden shrink-0 border border-white/10" id="ios-user-avatar">
-                            U
-                        </div>
-                        <div class="overflow-hidden flex-1">
-                            <div class="text-xs text-gray-400 font-medium">Отправка от аккаунта</div>
-                            <div id="ios-user-display" class="text-sm font-semibold text-white truncate">Клиент</div>
-                        </div>
-                        <span class="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Verified</span>
-                    </div>
-
-                    <div>
-                        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-2 px-1">Ваша оценка</label>
-                        <div class="grid grid-cols-5 gap-1.5 p-1 bg-black/40 border border-white/10 rounded-2xl">
-                            <button type="button" class="ios-star-seg py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 transition-all" data-value="1">1 ★</button>
-                            <button type="button" class="ios-star-seg py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 transition-all" data-value="2">2 ★</button>
-                            <button type="button" class="ios-star-seg py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 transition-all" data-value="3">3 ★</button>
-                            <button type="button" class="ios-star-seg py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 transition-all" data-value="4">4 ★</button>
-                            <button type="button" class="ios-star-seg py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 bg-white text-black shadow-md" data-value="5">5 ★</button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Текст отзыва</label>
-                        <textarea id="rev-text" rows="3" placeholder="Опишите ваши впечатления от работы..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all font-sans resize-none"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Прикрепить скриншот / фото</label>
-                        <div class="relative bg-black/30 border border-dashed border-white/20 hover:border-white/40 rounded-2xl p-3.5 transition-all flex items-center justify-between cursor-pointer group" onclick="document.getElementById('rev-file').click()">
-                            <div class="flex items-center gap-3 overflow-hidden">
-                                <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-lg text-white shrink-0 group-hover:scale-105 transition-transform">📷</div>
-                                <div class="overflow-hidden">
-                                    <div id="ios-file-name" class="text-xs font-semibold text-white truncate">Выбрать медиафайл</div>
-                                    <div class="text-[11px] text-gray-400">JPG, PNG до 10MB</div>
-                                </div>
-                            </div>
-                            <span class="text-xs font-semibold text-white/80 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-all">Обзор</span>
-                            <input type="file" id="rev-file" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
-                        </div>
-                    </div>
-
-                    <button type="button" onclick="submitReview()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-2xl text-sm transition-all active:scale-[0.98] shadow-xl mt-2 cursor-pointer">
-                        Опубликовать отзыв
-                    </button>
+        <!-- Лента отзывов -->
+        <section class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Лента отзывов клиентов</h3>
+                <span id="reviewCount" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">0 отзывов</span>
+            </div>
+            
+            <div id="reviewsContainer" class="space-y-3">
+                <!-- Карточки загружаются динамически -->
+                <div class="glass-panel p-6 rounded-2xl text-center">
+                    <div class="inline-block w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                    <p class="text-xs text-slate-400">Загрузка данных из облака...</p>
                 </div>
             </div>
-        </div>
-
+        </section>
     </div>
 
+    <!-- Футер -->
+    <footer class="text-center mt-12 text-[11px] text-slate-500 border-t border-slate-800/80 pt-4">
+        Modress Hub &bull; Telegram Mini App Server Client
+    </footer>
+
+    <!-- Скрипт логики -->
     <script>
+        // Ваш активный домен бэкенда на Bothost
+        const API_URL = "https://modress.bothost.tech/api/reviews";
+
         let tg = window.Telegram?.WebApp;
-        if (tg) { tg.ready(); tg.expand(); }
+        tg?.ready();
+        const currentUsername = tg?.initDataUnsafe?.user?.username || 'neleron'; 
 
-        let userName = "Клиент";
-        let userLink = "https://t.me/neleron";
-        let userPhoto = "";
-        let currentUsername = "";
-
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const u = tg.initDataUnsafe.user;
-            if (u.username) currentUsername = u.username.toLowerCase();
-            userName = u.first_name + (u.last_name ? " " + u.last_name : "");
-            if (u.username) {
-                userLink = `https://t.me/${u.username}`;
-                userName += ` (@${u.username})`;
-            }
-            if (u.photo_url) userPhoto = u.photo_url;
-        }
-
+        // Проверка прав администратора для @neleron
         let isAdmin = currentUsername === 'neleron' || currentUsername === 'neleronbot';
 
-        document.getElementById('ios-user-display').textContent = userName;
-        const avatarBox = document.getElementById('ios-user-avatar');
-        if (userPhoto) {
-            avatarBox.innerHTML = `<img src="${userPhoto}" class="w-full h-full object-cover">`;
-        } else {
-            avatarBox.textContent = userName.charAt(0).toUpperCase();
-        }
+        let base64Image = "";
 
-        let currentRating = 5;
-        const starSegs = document.querySelectorAll('.ios-star-seg');
-        starSegs.forEach(seg => {
-            seg.addEventListener('click', (e) => {
-                const btn = e.currentTarget;
-                currentRating = parseInt(btn.getAttribute('data-value'));
-                starSegs.forEach(s => {
-                    const val = parseInt(s.getAttribute('data-value'));
-                    if (val === currentRating) {
-                        s.className = "ios-star-seg py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 bg-white text-black shadow-md transition-all";
-                    } else {
-                        s.className = "ios-star-seg py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 text-gray-400 hover:text-white transition-all";
-                    }
-                });
-            });
-        });
-
-        function handleFileSelect(input) {
-            const label = document.getElementById('ios-file-name');
-            if (input.files && input.files[0]) {
-                label.textContent = input.files[0].name;
-            } else {
-                label.textContent = 'Выбрать медиафайл';
-            }
-        }
-
-        function switchTab(tabId) {
-            ['hero', 'about', 'price', 'reviews', 'contact'].forEach(s => {
-                const sec = document.getElementById(`sec-${s}`);
-                if (sec) {
-                    sec.classList.add('hidden');
-                    sec.classList.remove('anim-in');
+        function handleImage(input) {
+            const file = input.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Файл слишком большой. Максимальный размер 5MB.');
+                    return;
                 }
-            });
-
-            const activeSec = document.getElementById(`sec-${tabId}`);
-            if (activeSec) {
-                activeSec.classList.remove('hidden');
-                void activeSec.offsetWidth;
-                activeSec.classList.add('anim-in');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64Image = e.target.result;
+                    document.getElementById('fileLabel').innerText = `Файл прикреплен (${file.name.slice(0, 12)}...)`;
+                    document.getElementById('fileLabel').classList.add('text-blue-400');
+                }
+                reader.readAsDataURL(file);
             }
-
-            ['hero', 'about', 'price', 'reviews', 'contact'].forEach(s => {
-                const dBtn = document.getElementById(`tab-${s}`);
-                const mBtn = document.getElementById(`mob-tab-${s}`);
-                if (dBtn) dBtn.className = (s === tabId) ? "nav-btn active px-4 py-2 rounded-full text-xs font-medium transition-all" : "nav-btn px-4 py-2 rounded-full text-xs font-medium transition-all";
-                if (mBtn) mBtn.className = (s === tabId) ? "nav-btn active px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap" : "nav-btn px-3 py-2 rounded-full text-[11px] font-medium transition-all whitespace-nowrap";
-            });
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function tgOpen(url) {
-            if (tg && tg.openLink) tg.openLink(url);
-            else window.open(url, '_blank');
-        }
-
-        function toggleContactCard(card) {
-            card.classList.toggle('active');
-        }
-
-        let currentReviewFilter = 'all';
-        let serverReviews = [];
-        const API_URL = "http://localhost:8000/api/reviews"; // Адрес вашего Python бэкенда
-
-        async function fetchReviewsFromServer() {
+        async function loadReviews() {
             try {
-                const res = await fetch(API_URL);
-                if (res.ok) {
-                    serverReviews = await res.json();
-                    renderReviews();
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Ошибка связи с сервером');
+                const reviews = await response.json();
+                
+                const container = document.getElementById('reviewsContainer');
+                document.getElementById('reviewCount').innerText = `${reviews.length} отзывов`;
+                container.innerHTML = '';
+
+                if (reviews.length === 0) {
+                    container.innerHTML = `
+                        <div class="glass-panel p-6 rounded-2xl text-center text-slate-500 text-xs">
+                            Пока нет ни одного отзыва. Станьте первыми, кто поделится мнением!
+                        </div>`;
+                    return;
                 }
-            } catch (e) {
-                console.error("Ошибка связи с сервером", e);
+
+                reviews.reverse().forEach((review) => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-panel p-4 rounded-2xl relative text-sm transition hover:border-slate-700';
+                    
+                    let deleteBtn = '';
+                    if (isAdmin) {
+                        deleteBtn = `
+                            <button onclick="deleteReview('${review.id}')" class="absolute top-3 right-3 text-red-400 hover:text-red-300 text-[11px] bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded-xl border border-red-500/20 transition flex items-center gap-1">
+                                Удалить
+                            </button>`;
+                    }
+
+                    let imgHtml = '';
+                    if (review.image) {
+                        imgHtml = `
+                            <div class="mt-3 overflow-hidden rounded-xl border border-white/10 max-h-56 bg-slate-900/50">
+                                <img src="${review.image}" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer" onclick="window.open(this.src)">
+                            </div>`;
+                    }
+
+                    card.innerHTML = `
+                        ${deleteBtn}
+                        <div class="flex items-center gap-2 mb-1.5 pr-16">
+                            <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xs font-bold text-white shadow-md">
+                                ${escapeHtml(review.name.charAt(0).toUpperCase())}
+                            </div>
+                            <h4 class="font-bold text-slate-200 text-sm">${escapeHtml(review.name)}</h4>
+                        </div>
+                        <p class="text-slate-300 text-xs whitespace-pre-wrap leading-relaxed pl-9">${escapeHtml(review.text)}</p>
+                        <div class="pl-9">
+                            ${imgHtml}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error(error);
+                document.getElementById('reviewsContainer').innerHTML = `
+                    <div class="glass-panel p-6 rounded-2xl text-center text-red-400 text-xs">
+                        Не удалось загрузить отзывы с хостинга. Проверьте соединение.
+                    </div>`;
             }
         }
 
         async function submitReview() {
-            const textInput = document.getElementById('rev-text');
-            const text = textInput ? textInput.value.trim() : '';
-            const fileInput = document.getElementById('rev-file');
+            const nameField = document.getElementById('reviewName');
+            const textField = document.getElementById('reviewText');
+            
+            const name = nameField.value.trim();
+            const text = textField.value.trim();
 
-            if (!text) {
-                if (textInput) {
-                    textInput.focus();
-                    textInput.classList.add('ring-2', 'ring-red-500');
-                    setTimeout(() => textInput.classList.remove('ring-2', 'ring-red-500'), 1500);
-                }
+            if (!name || !text) {
+                alert('Пожалуйста, заполните имя и текст отзыва!');
                 return;
             }
 
-            const newReview = {
-                name: userName || "Клиент",
-                link: userLink || "https://t.me/neleron",
-                photo: userPhoto || "",
-                rating: currentRating || 5,
-                text: text,
-                image: ""
-            };
-
-            const sendData = async (imgData = "") => {
-                newReview.image = imgData;
-                try {
-                    const res = await fetch(API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(newReview)
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        serverReviews = data.reviews;
-                        renderReviews();
-                    }
-                } catch(e) {
-                    alert("Не удалось отправить отзыв на сервер!");
-                }
-
-                if (textInput) textInput.value = '';
-                if (fileInput) fileInput.value = '';
-                document.getElementById('ios-file-name').textContent = 'Выбрать медиафайл';
-                currentRating = 5;
-                closeReviewModal();
-                switchTab('reviews');
-            };
-
-            if (fileInput && fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) { sendData(e.target.result); };
-                reader.onerror = function() { sendData(""); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                sendData("");
-            }
-        }
-
-        async function deleteReview(index) {
             try {
-                const res = await fetch(`${API_URL}/${index}?username=${currentUsername}`, {
-                    method: "DELETE"
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, text, image: base64Image })
                 });
-                if (res.ok) {
-                    const data = await res.json();
-                    serverReviews = data.reviews;
-                    renderReviews();
-                } else {
-                    alert("Ошибка удаления: недостаточно прав");
-                }
-            } catch(e) {
-                alert("Ошибка связи с сервером");
+
+                if (!response.ok) throw new Error('Ошибка отправки');
+
+                nameField.value = '';
+                textField.value = '';
+                document.getElementById('reviewImage').value = '';
+                document.getElementById('fileLabel').innerText = 'Прикрепить скриншот или фото';
+                document.getElementById('fileLabel').classList.remove('text-blue-400');
+                base64Image = "";
+                
+                loadReviews();
+            } catch (error) {
+                alert('Не удалось отправить отзыв на сервер!');
             }
         }
 
-        function setReviewFilter(filter) {
-            currentReviewFilter = filter;
-            ['all', 'with-photo', 'without-photo'].forEach(f => {
-                const btn = document.getElementById(`filter-${f}`);
-                if (!btn) return;
-                btn.className = (f === filter) ? "px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all" : "px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all";
-            });
-            renderReviews();
-        }
-
-        function renderReviews() {
-            const list = document.getElementById('reviews-container');
-            if (!list) return;
-
-            const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
-
-            const withPhoto = serverReviews.filter(r => r.image && r.image.trim() !== '');
-            const withoutPhoto = serverReviews.filter(r => !r.image || r.image.trim() === '');
-
-            document.getElementById('count-all').textContent = serverReviews.length;
-            document.getElementById('count-photo').textContent = withPhoto.length;
-            document.getElementById('count-nophoto').textContent = withoutPhoto.length;
-
-            let targetReviews = serverReviews;
-            if (currentReviewFilter === 'with-photo') targetReviews = withPhoto;
-            if (currentReviewFilter === 'without-photo') targetReviews = withoutPhoto;
-
-            if (searchQuery) {
-                targetReviews = targetReviews.filter(r => 
-                    (r.name && r.name.toLowerCase().includes(searchQuery)) || 
-                    (r.text && r.text.toLowerCase().includes(searchQuery))
-                );
-            }
-
-            if (targetReviews.length === 0) {
-                list.innerHTML = `<div class="glass-card p-8 text-center text-sm text-gray-500 font-mono col-span-2 rounded-[28px]">Отзывов пока нет. Будьте первыми!</div>`;
-                return;
-            }
-
-            list.innerHTML = targetReviews.map((r, index) => {
-                let starsHtml = '';
-                for (let i = 1; i <= 5; i++) {
-                    starsHtml += `<span class="${i <= r.rating ? 'text-yellow-400' : 'text-gray-700'} text-sm">★</span>`;
-                }
-
-                let avatarHtml = r.photo 
-                    ? `<img src="${r.photo}" class="w-full h-full object-cover">` 
-                    : `<span class="text-sm font-bold text-white font-mono">${(r.name || 'C').charAt(0).toUpperCase()}</span>`;
-
-                let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
-
-                let deleteBtnHtml = isAdmin ? `
-                    <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
-                        Удалить ✕
-                    </button>
-                ` : '';
-
-                return `
-                    <div class="glass-card p-6 flex flex-col justify-between space-y-4 anim-in rounded-[28px]">
-                        <div class="space-y-3.5">
-                            <div class="flex items-center justify-between">
-                                <a href="${r.link}" target="_blank" class="flex items-center gap-3 group">
-                                    <div class="w-11 h-11 rounded-full bg-black/50 border border-white/10 overflow-hidden flex items-center justify-center shrink-0">
-                                        ${avatarHtml}
-                                    </div>
-                                    <div class="overflow-hidden">
-                                        <div class="font-bold text-white text-sm truncate group-hover:underline">${r.name}</div>
-                                        <div class="text-[10px] text-gray-400 font-mono">телеграм-профиль ↗</div>
-                                    </div>
-                                </a>
-                                <div class="flex items-center gap-2">
-                                    <div class="flex shrink-0">${starsHtml}</div>
-                                    ${deleteBtnHtml}
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-300 leading-relaxed">${r.text}</p>
-                        </div>
-                        ${imageHtml}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function openReviewModal() {
-            const modal = document.getElementById('review-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+        async function deleteReview(id) {
+            if (!confirm('Вы уверены, что хотите удалить этот отзыв?')) return;
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Ошибка удаления');
+                loadReviews();
+            } catch (e) {
+                alert('Не удалось удалить отзыв с сервера.');
             }
         }
 
-        function closeReviewModal() {
-            const modal = document.getElementById('review-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchReviewsFromServer();
-            // Автоматическое обновление каждые 3 секунды, чтобы подтягивать чужие отзывы
-            setInterval(fetchReviewsFromServer, 3000);
-        });
+        // Автозагрузка отзывов при открытии
+        loadReviews();
     </script>
 </body>
 </html>
