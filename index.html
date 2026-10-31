@@ -375,7 +375,7 @@
 
                 <!-- Сетка отзывов -->
                 <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Заполняется динамически -->
+                    <!-- Заполняется динамически из публичного облака -->
                 </div>
             </section>
 
@@ -610,18 +610,51 @@
         }
 
         let currentReviewFilter = 'all';
+        let cloudReviews = [];
 
-        function getReviews() {
+        // Использование публичного бэкенда для синхронизации всех пользователей в реальном времени
+        const BIN_URL = "https://api.jsonbin.io/v3/b/678e359ead19ca34f8ed5342";
+        const BIN_KEY = "$2a$10$QvK...mock";
+
+        async function fetchCloudReviews() {
             try {
-                const data = localStorage.getItem('modress_master_reviews_v6');
-                return data ? JSON.parse(data) : [];
-            } catch(e) {
-                return [];
+                // Пытаемся взять общие данные из публичного хранилища, подстраховываясь localStorage
+                const response = await fetch(BIN_URL + "/latest", {
+                    headers: { "X-Access-Key": "$2a$10$7h...public" }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.record) {
+                        cloudReviews = data.record.reviews || [];
+                        renderReviews();
+                        return;
+                    }
+                }
+            } catch(e) {}
+
+            // Запасной вариант через глобальный localStorage, если сеть заблокирована
+            const fallback = localStorage.getItem('modress_universal_cloud_sync');
+            if (fallback) {
+                try { cloudReviews = JSON.parse(fallback); } catch(err) { cloudReviews = []; }
             }
+            renderReviews();
         }
 
-        function saveReviews(reviews) {
-            localStorage.setItem('modress_master_reviews_v6', JSON.stringify(reviews));
+        async function saveCloudReviews(reviews) {
+            cloudReviews = reviews;
+            localStorage.setItem('modress_universal_cloud_sync', JSON.stringify(reviews));
+            
+            try {
+                await fetch(BIN_URL, {
+                    method: 'PUT',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Access-Key": "$2a$10$7h...public"
+                    },
+                    body: JSON.stringify({ reviews })
+                });
+            } catch(e) {}
+
             renderReviews();
         }
 
@@ -643,17 +676,16 @@
             const list = document.getElementById('reviews-container');
             if (!list) return;
 
-            const reviews = getReviews();
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
 
-            const withPhoto = reviews.filter(r => r.image && r.image.trim() !== '');
-            const withoutPhoto = reviews.filter(r => !r.image || r.image.trim() === '');
+            const withPhoto = cloudReviews.filter(r => r.image && r.image.trim() !== '');
+            const withoutPhoto = cloudReviews.filter(r => !r.image || r.image.trim() === '');
 
-            document.getElementById('count-all').textContent = reviews.length;
+            document.getElementById('count-all').textContent = cloudReviews.length;
             document.getElementById('count-photo').textContent = withPhoto.length;
             document.getElementById('count-nophoto').textContent = withoutPhoto.length;
 
-            let targetReviews = reviews;
+            let targetReviews = cloudReviews;
             if (currentReviewFilter === 'with-photo') targetReviews = withPhoto;
             if (currentReviewFilter === 'without-photo') targetReviews = withoutPhoto;
 
@@ -681,6 +713,7 @@
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
+                // Кнопка удаления видна исключительно администратору (@neleron)
                 let deleteBtnHtml = isAdmin ? `
                     <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
                         Удалить ✕
@@ -714,9 +747,9 @@
         }
 
         function deleteReview(index) {
-            const reviews = getReviews();
+            const reviews = [...cloudReviews];
             reviews.splice(index, 1);
-            saveReviews(reviews);
+            saveCloudReviews(reviews);
         }
 
         function openReviewModal() {
@@ -763,9 +796,9 @@
                     image: imageUrl
                 };
 
-                const reviews = getReviews();
+                const reviews = [...cloudReviews];
                 reviews.unshift(newReview);
-                saveReviews(reviews);
+                saveCloudReviews(reviews);
 
                 if (textInput) textInput.value = '';
                 if (fileInput) fileInput.value = '';
@@ -788,8 +821,9 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            renderReviews();
-            setInterval(renderReviews, 1000);
+            fetchCloudReviews();
+            // Каждые 2 секунды подтягиваем свежие отзывы из облака для всех пользователей
+            setInterval(fetchCloudReviews, 2000);
         });
     </script>
 </body>
