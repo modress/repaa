@@ -175,13 +175,13 @@
         }
 
         @keyframes slideFadeIn {
-            0% { opacity: 0; transform: scale(0.98); }
-            100% { opacity: 1; transform: scale(1); }
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         .anim-in {
-            animation: slideFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            will-change: opacity, transform;
+            animation: slideFadeIn 0.25s ease-out forwards;
+            will-change: opacity;
         }
 
         .contact-card {
@@ -458,8 +458,8 @@
         </main>
 
         <!-- iOS STYLE SHEET MODAL FOR ADDING REVIEW -->
-        <div id="review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all">
-            <div class="w-full max-w-lg bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-t-[36px] sm:rounded-[32px] p-6 sm:p-7 space-y-5 border border-white/15 shadow-2xl anim-in relative">
+        <div id="review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all" onclick="if(event.target === this) closeReviewModal()">
+            <div class="w-full max-w-lg bg-[#1c1c1e] sm:bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-t-[36px] sm:rounded-[32px] p-6 sm:p-7 space-y-5 border border-white/15 shadow-2xl anim-in relative max-h-[90vh] overflow-y-auto">
                 
                 <!-- iOS Grabber Bar (Top Pill) -->
                 <div class="w-10 h-1 bg-white/30 rounded-full mx-auto sm:hidden mb-1"></div>
@@ -470,7 +470,7 @@
                         <h3 class="text-lg font-bold text-white tracking-tight">Новый отзыв</h3>
                         <p class="text-xs text-gray-400">Поделитесь впечатлениями о сотрудничестве</p>
                     </div>
-                    <button onclick="closeReviewModal()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white font-semibold text-sm transition-all active:scale-90">✕</button>
+                    <button type="button" onclick="closeReviewModal()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white font-semibold text-sm transition-all active:scale-90">✕</button>
                 </div>
                 
                 <div class="space-y-4">
@@ -525,7 +525,7 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button onclick="submitReview()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-2xl text-sm transition-all active:scale-[0.98] shadow-xl mt-2">
+                    <button type="button" onclick="submitReview()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-2xl text-sm transition-all active:scale-[0.98] shadow-xl mt-2 cursor-pointer">
                         Опубликовать отзыв
                     </button>
                 </div>
@@ -777,42 +777,74 @@
         }
 
         function openReviewModal() {
-            document.getElementById('review-modal').classList.remove('hidden');
-            document.getElementById('review-modal').classList.add('flex');
+            const modal = document.getElementById('review-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         function closeReviewModal() {
-            document.getElementById('review-modal').classList.add('hidden');
-            document.getElementById('review-modal').classList.remove('flex');
+            const modal = document.getElementById('review-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         }
 
         function submitReview() {
-            const name = userName;
-            const link = userLink;
-            const photo = userPhoto;
-            const text = document.getElementById('rev-text').value.trim();
+            const textInput = document.getElementById('rev-text');
+            const text = textInput ? textInput.value.trim() : '';
             const fileInput = document.getElementById('rev-file');
 
-            if (!text) return;
+            if (!text) {
+                if (textInput) {
+                    textInput.focus();
+                    textInput.classList.add('ring-2', 'ring-red-500');
+                    setTimeout(() => textInput.classList.remove('ring-2', 'ring-red-500'), 1500);
+                }
+                return;
+            }
+
+            const name = userName || "Аноним";
+            const link = userLink || "https://t.me/neleron";
+            const photo = userPhoto || "";
 
             const saveReviewData = (imageUrl = '') => {
-                const newReview = { name, link, photo, rating: currentRating, text, image: imageUrl };
+                const newReview = { 
+                    name, 
+                    link, 
+                    photo, 
+                    rating: currentRating || 5, 
+                    text, 
+                    image: imageUrl 
+                };
+                
                 const reviews = getReviews();
                 reviews.unshift(newReview);
-                localStorage.setItem('modress_pro_reviews', JSON.stringify(reviews));
+                
+                try {
+                    localStorage.setItem('modress_pro_reviews', JSON.stringify(reviews));
+                } catch(e) {
+                    console.error('LocalStorage save error', e);
+                }
 
-                document.getElementById('rev-text').value = '';
-                document.getElementById('rev-file').value = '';
-                document.getElementById('ios-file-name').textContent = 'Выбрать медиафайл';
+                if (textInput) textInput.value = '';
+                if (fileInput) fileInput.value = '';
+                
+                const fileNameLabel = document.getElementById('ios-file-name');
+                if (fileNameLabel) fileNameLabel.textContent = 'Выбрать медиафайл';
+                
                 currentRating = 5;
 
                 closeReviewModal();
                 renderReviews();
             };
 
-            if (fileInput.files && fileInput.files[0]) {
+            if (fileInput && fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) { saveReviewData(e.target.result); };
+                reader.onerror = function() { saveReviewData(''); };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
                 saveReviewData('');
