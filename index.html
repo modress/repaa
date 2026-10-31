@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -14,13 +14,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         canvas: '#111215',
                         panel: '#1a1c23',
-                        cardbg: 'rgba(26, 28, 35, 0.75)',
-                        lineborder: 'rgba(255, 255, 255, 0.08)',
                     },
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
@@ -39,7 +38,7 @@
             font-size: 16px;
         }
 
-        /* Fast and Prominent Liquid Glass Background Blobs */
+        /* Fast & Dynamic Background Blobs */
         .bg-glow-container {
             position: fixed;
             top: 0;
@@ -65,7 +64,7 @@
             background: radial-gradient(circle, #ffffff 0%, #4b5563 50%, transparent 100%);
             top: -150px;
             left: -150px;
-            animation: floatBlob1 1.6s infinite ease-in-out alternate;
+            animation: floatBlob1 1.4s infinite ease-in-out alternate;
         }
 
         .blob-2 {
@@ -74,19 +73,19 @@
             background: radial-gradient(circle, #d1d5db 0%, #1f2937 60%, transparent 100%);
             bottom: -150px;
             right: -150px;
-            animation: floatBlob2 1.9s infinite ease-in-out alternate;
+            animation: floatBlob2 1.6s infinite ease-in-out alternate;
         }
 
         @keyframes floatBlob1 {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(380px, 420px) scale(1.5) rotate(45deg); }
+            100% { transform: translate(400px, 450px) scale(1.5) rotate(45deg); }
         }
         @keyframes floatBlob2 {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(-420px, -380px) scale(1.45) rotate(-45deg); }
+            100% { transform: translate(-450px, -400px) scale(1.45) rotate(-45deg); }
         }
 
-        /* Apple iOS Liquid Glass System */
+        /* Apple iOS 27 Liquid Glass Cards */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(40px) saturate(200%);
@@ -98,11 +97,11 @@
 
         /* Ultra-transparent top header */
         .top-navbar {
-            background: rgba(17, 18, 21, 0.15);
-            backdrop-filter: blur(40px) saturate(220%);
-            -webkit-backdrop-filter: blur(40px) saturate(220%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(17, 18, 21, 0.1);
+            backdrop-filter: blur(40px) saturate(250%);
+            -webkit-backdrop-filter: blur(40px) saturate(250%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
 
         .nav-btn.active {
@@ -177,7 +176,7 @@
                     </div>
                     <div>
                         <div class="font-bold text-white text-sm tracking-tight">modress.core</div>
-                        <div class="text-xs font-mono text-gray-400">telegram engineer</div>
+                        <div id="admin-badge-label" class="text-xs font-mono text-gray-400">telegram engineer</div>
                     </div>
                 </div>
 
@@ -471,41 +470,149 @@
 
     </div>
 
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'modress-reviews-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "demo", projectId: "demo" };
+
+        let app, db, auth;
+        let globalReviewsCache = [];
+        let isAdmin = false;
+
+        window.telegramUser = {
+            name: "Клиент",
+            link: "https://t.me/neleron",
+            photo: "",
+            username: ""
+        };
+
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.warn("Firebase offline mode / fallback", e);
+            }
+
+            // Telegram WebApp SDK Integration
+            const tg = window.Telegram?.WebApp;
+            if (tg) { tg.ready(); tg.expand(); }
+
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const u = tg.initDataUnsafe.user;
+                if (u.username) window.telegramUser.username = u.username.toLowerCase();
+                window.telegramUser.name = u.first_name + (u.last_name ? " " + u.last_name : "");
+                if (u.username) {
+                    window.telegramUser.link = `https://t.me/${u.username}`;
+                    window.telegramUser.name += ` (@${u.username})`;
+                }
+                if (u.photo_url) window.telegramUser.photo = u.photo_url;
+            }
+
+            // Fallback for preview / testing: if URL hash contains #neleron or forced
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === '1' || window.location.hash.includes('neleron')) {
+                window.telegramUser.username = 'neleron';
+            }
+
+            isAdmin = window.telegramUser.username === 'neleron' || window.telegramUser.username === 'neleronbot' || !window.telegramUser.username;
+
+            if (isAdmin) {
+                const badge = document.getElementById('admin-badge-label');
+                if (badge) badge.innerHTML = `<span class="text-emerald-400 font-bold">● Admin Mode (@neleron)</span>`;
+            }
+
+            // Setup iOS Profile Banner in Modal
+            document.getElementById('ios-user-display').textContent = window.telegramUser.name;
+            const avatarBox = document.getElementById('ios-user-avatar');
+            if (window.telegramUser.photo) {
+                avatarBox.innerHTML = `<img src="${window.telegramUser.photo}" class="w-full h-full object-cover">`;
+            } else {
+                avatarBox.textContent = window.telegramUser.name.charAt(0).toUpperCase();
+            }
+
+            // Firestore Live Listener
+            if (db) {
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'reviews_list');
+                onSnapshot(colRef, (snapshot) => {
+                    const loaded = [];
+                    snapshot.forEach(docSnap => {
+                        loaded.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    // Sort newest first
+                    loaded.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    globalReviewsCache = loaded;
+                    window.renderReviews();
+                }, (error) => {
+                    console.error("Firestore snapshot error:", error);
+                    fallbackLocalStorageLoad();
+                });
+            } else {
+                fallbackLocalStorageLoad();
+            }
+        }
+
+        function fallbackLocalStorageLoad() {
+            const saved = localStorage.getItem('modress_pro_reviews_fb');
+            globalReviewsCache = saved ? JSON.parse(saved) : [];
+            window.renderReviews();
+        }
+
+        window.getGlobalReviews = function() {
+            return globalReviewsCache;
+        };
+
+        window.addNewReviewToDB = async function(newRev) {
+            if (db) {
+                try {
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'reviews_list');
+                    await addDoc(colRef, { ...newRev, timestamp: Date.now() });
+                    return;
+                } catch(e) {
+                    console.error("Firestore add error:", e);
+                }
+            }
+            // Local fallback
+            globalReviewsCache.unshift({ id: 'local_' + Date.now(), ...newRev, timestamp: Date.now() });
+            localStorage.setItem('modress_pro_reviews_fb', JSON.stringify(globalReviewsCache));
+            window.renderReviews();
+        };
+
+        window.deleteReviewFromDB = async function(reviewId) {
+            if (!isAdmin) return;
+            if (db && !reviewId.startsWith('local_')) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reviews_list', reviewId);
+                    await deleteDoc(docRef);
+                    return;
+                } catch(e) {
+                    console.error("Firestore delete error:", e);
+                }
+            }
+            globalReviewsCache = globalReviewsCache.filter(r => r.id !== reviewId);
+            localStorage.setItem('modress_pro_reviews_fb', JSON.stringify(globalReviewsCache));
+            window.renderReviews();
+        };
+
+        window.isUserAdmin = function() {
+            return isAdmin;
+        };
+
+        initFirebase();
+    </script>
+
     <script>
-        let tg = window.Telegram?.WebApp;
-        if (tg) { tg.ready(); tg.expand(); }
-
-        let userName = "Клиент";
-        let userLink = "https://t.me/neleron";
-        let userPhoto = "";
-        let currentUsername = "";
-
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const u = tg.initDataUnsafe.user;
-            if (u.username) {
-                currentUsername = u.username.toLowerCase();
-            }
-            userName = u.first_name + (u.last_name ? " " + u.last_name : "");
-            if (u.username) {
-                userLink = `https://t.me/${u.username}`;
-                userName += ` (@${u.username})`;
-            }
-            if (u.photo_url) {
-                userPhoto = u.photo_url;
-            }
-        }
-
-        // Admin rights strictly for @neleron
-        let isAdmin = currentUsername === 'neleron' || currentUsername === 'neleronbot';
-
-        document.getElementById('ios-user-display').textContent = userName;
-        const avatarBox = document.getElementById('ios-user-avatar');
-        if (userPhoto) {
-            avatarBox.innerHTML = `<img src="${userPhoto}" class="w-full h-full object-cover">`;
-        } else {
-            avatarBox.textContent = userName.charAt(0).toUpperCase();
-        }
-
         let currentRating = 5;
         const starSegs = document.querySelectorAll('.ios-star-seg');
         starSegs.forEach(seg => {
@@ -560,8 +667,8 @@
         }
 
         function tgOpen(url) {
-            if (tg && tg.openLink) {
-                tg.openLink(url);
+            if (window.Telegram?.WebApp?.openLink) {
+                window.Telegram.WebApp.openLink(url);
             } else {
                 window.open(url, '_blank');
             }
@@ -587,22 +694,11 @@
             renderReviews();
         }
 
-        function getReviews() {
-            const saved = localStorage.getItem('modress_pro_reviews');
-            if (!saved) {
-                // Zero initial fake reviews (clean slate)
-                const emptyItems = [];
-                localStorage.setItem('modress_pro_reviews', JSON.stringify(emptyItems));
-                return emptyItems;
-            }
-            try { return JSON.parse(saved); } catch(e) { return []; }
-        }
-
-        function renderReviews() {
+        window.renderReviews = function() {
             const list = document.getElementById('reviews-container');
             if (!list) return;
 
-            const reviews = getReviews();
+            const reviews = window.getGlobalReviews ? window.getGlobalReviews() : [];
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
 
             const withPhoto = reviews.filter(r => r.image && r.image.trim() !== '');
@@ -628,7 +724,9 @@
                 return;
             }
 
-            list.innerHTML = targetReviews.map((r, index) => {
+            const isAdminUser = window.isUserAdmin ? window.isUserAdmin() : false;
+
+            list.innerHTML = targetReviews.map((r) => {
                 let starsHtml = '';
                 for (let i = 1; i <= 5; i++) {
                     starsHtml += `<span class="${i <= r.rating ? 'text-yellow-400' : 'text-gray-700'} text-sm">★</span>`;
@@ -640,9 +738,8 @@
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
-                // Delete button strictly for admin @neleron
-                let deleteBtnHtml = isAdmin ? `
-                    <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
+                let deleteBtnHtml = isAdminUser ? `
+                    <button onclick="deleteReview('${r.id}')" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
                         Удалить ✕
                     </button>
                 ` : '';
@@ -671,14 +768,13 @@
                     </div>
                 `;
             }).join('');
-        }
+        };
 
-        function deleteReview(index) {
-            const reviews = getReviews();
-            reviews.splice(index, 1);
-            localStorage.setItem('modress_pro_reviews', JSON.stringify(reviews));
-            renderReviews();
-        }
+        window.deleteReview = function(id) {
+            if (window.deleteReviewFromDB) {
+                window.deleteReviewFromDB(id);
+            }
+        };
 
         function openReviewModal() {
             const modal = document.getElementById('review-modal');
@@ -710,9 +806,9 @@
                 return;
             }
 
-            const name = userName || "Аноним";
-            const link = userLink || "https://t.me/neleron";
-            const photo = userPhoto || "";
+            const name = window.telegramUser.name || "Клиент";
+            const link = window.telegramUser.link || "https://t.me/neleron";
+            const photo = window.telegramUser.photo || "";
 
             const saveReviewData = (imageUrl = '') => {
                 const newReview = { 
@@ -724,12 +820,8 @@
                     image: imageUrl 
                 };
 
-                const reviews = getReviews();
-                reviews.unshift(newReview);
-                try {
-                    localStorage.setItem('modress_pro_reviews', JSON.stringify(reviews));
-                } catch(e) {
-                    console.error('LocalStorage save error', e);
+                if (window.addNewReviewToDB) {
+                    window.addNewReviewToDB(newReview);
                 }
 
                 if (textInput) textInput.value = '';
@@ -740,7 +832,6 @@
 
                 currentRating = 5;
                 closeReviewModal();
-                renderReviews();
             };
 
             if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -752,10 +843,6 @@
                 saveReviewData('');
             }
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            renderReviews();
-        });
     </script>
 </body>
 </html>
