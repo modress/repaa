@@ -565,15 +565,11 @@
         let serverReviews = [];
         const API_URL = 'https://modress.bothost.tech/api/reviews';
 
-       // Было (примерно так):
-// const response = await fetch('/api/reviews', { method: 'POST', body: ... });
+
 async function submitReview() {
     const textInput = document.getElementById('rev-text');
     const text = textInput ? textInput.value.trim() : '';
     const fileInput = document.getElementById('rev-file');
-
-    // Проверяем текст ДО отправки
-    if (!text) {
         if (textInput) {
             textInput.focus();
             textInput.classList.add('ring-2', 'ring-red-500');
@@ -582,73 +578,49 @@ async function submitReview() {
         return;
     }
 
-    const reviewData = {
-        text: text,
-        rating: 5
+    const sendData = async (imageBase64) => {
+        const reviewData = {
+            text: text,
+            rating: 5,
+            image: imageBase64 || null
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reviewData)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                serverReviews = data.reviews || [];
+                renderReviews();
+            } else {
+                alert("Не удалось отправить отзыв на сервер!");
+            }
+        } catch (e) {
+            alert("Ошибка связи с сервером");
+        }
+
+        if (textInput) textInput.value = "";
+        if (fileInput) fileInput.value = "";
+        const fileNameEl = document.getElementById('ios-file-name');
+        if (fileNameEl) fileNameEl.textContent = 'Выбрать медиафайл';
+        
+        closeReviewModal();
+        setReviewFilter("all");
     };
 
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(reviewData)
-        });
-
-        if (response.ok) {
-            fetchReviewsFromServer();
-            if (textInput) textInput.value = ''; // Очищаем поле после успешной отправки
-        } else {
-            alert('Не удалось отправить отзыв на сервер!');
-        }
-    } catch (e) {
-        console.error("Ошибка связи с сервером", e);
-        alert('Не удалось отправить отзыв на сервер!');
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => { sendData(e.target.result); };
+        reader.onerror = () => { sendData(""); };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        sendData("");
     }
 }
-
-            const newReview = {
-                name: userName || "Клиент",
-                link: userLink || "https://t.me/neleron",
-                photo: userPhoto || "",
-                rating: currentRating || 5,
-                text: text,
-                image: ""
-            };
-
-            const sendData = async (imgData = "") => {
-                newReview.image = imgData;
-                try {
-                    const res = await fetch(API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(newReview)
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        serverReviews = data.reviews;
-                        renderReviews();
-                    }
-                } catch(e) {
-                    alert("Не удалось отправить отзыв на сервер!");
-                }
-
-                if (textInput) textInput.value = '';
-                if (fileInput) fileInput.value = '';
-                document.getElementById('ios-file-name').textContent = 'Выбрать медиафайл';
-                currentRating = 5;
-                closeReviewModal();
-                switchTab('reviews');
-            };
-
-            if (fileInput && fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) { sendData(e.target.result); };
-                reader.onerror = function() { sendData(""); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                sendData("");
-            }
-
         async function deleteReview(index) {
             try {
                 const res = await fetch(`${API_URL}/${index}?username=${currentUsername}`, {
