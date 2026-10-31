@@ -65,7 +65,7 @@
             background: radial-gradient(circle, #ffffff 0%, #4b5563 50%, transparent 100%);
             top: -150px;
             left: -150px;
-            animation: floatBlob1 2.2s infinite ease-in-out alternate;
+            animation: floatBlob1 1.6s infinite ease-in-out alternate;
         }
 
         .blob-2 {
@@ -74,16 +74,16 @@
             background: radial-gradient(circle, #d1d5db 0%, #1f2937 60%, transparent 100%);
             bottom: -150px;
             right: -150px;
-            animation: floatBlob2 2.6s infinite ease-in-out alternate;
+            animation: floatBlob2 1.9s infinite ease-in-out alternate;
         }
 
         @keyframes floatBlob1 {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(350px, 380px) scale(1.45) rotate(45deg); }
+            100% { transform: translate(380px, 420px) scale(1.5) rotate(45deg); }
         }
         @keyframes floatBlob2 {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            100% { transform: translate(-380px, -330px) scale(1.4) rotate(-45deg); }
+            100% { transform: translate(-420px, -380px) scale(1.45) rotate(-45deg); }
         }
 
         /* Apple iOS Liquid Glass System */
@@ -96,21 +96,13 @@
             border-radius: 32px;
         }
 
+        /* Ultra-transparent top header */
         .top-navbar {
-            background: rgba(17, 18, 21, 0.35);
-            backdrop-filter: blur(35px) saturate(200%);
-            -webkit-backdrop-filter: blur(35px) saturate(200%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        /* Modern Floating Glass Dock with Soft Ultra-Rounded Corners */
-        .modern-bottom-dock {
-            background: rgba(18, 20, 26, 0.45);
+            background: rgba(17, 18, 21, 0.15);
             backdrop-filter: blur(40px) saturate(220%);
             -webkit-backdrop-filter: blur(40px) saturate(220%);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 1.5px rgba(255, 255, 255, 0.4);
-            border-radius: 9999px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .nav-btn.active {
@@ -120,58 +112,6 @@
             font-weight: 700;
             border: 1px solid rgba(255, 255, 255, 0.35);
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.45);
-        }
-
-        .top-navbar {
-            background: rgba(17, 18, 21, 0.65);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        /* Modern Liquid Dock Bottom Navigation with Rounded Pill Corners */
-        .modern-bottom-dock {
-            background: rgba(18, 20, 26, 0.75);
-            backdrop-filter: blur(35px) saturate(210%);
-            -webkit-backdrop-filter: blur(35px) saturate(210%);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.35);
-            border-radius: 9999px;
-        }
-
-        .nav-btn.active {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            color: #ffffff;
-            font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.4);
-        }
-
-        .mobile-nav-btn {
-            position: relative;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .mobile-nav-btn.active {
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        .mobile-nav-btn.active .tab-icon {
-            transform: translateY(-2px) scale(1.1);
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
-        }
-
-        .mobile-nav-btn .active-indicator {
-            opacity: 0;
-            transform: scale(0.4);
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .mobile-nav-btn.active .active-indicator {
-            opacity: 1;
-            transform: scale(1);
         }
 
         @keyframes slideFadeIn {
@@ -200,7 +140,6 @@
             margin-top: 1.25rem;
         }
 
-        /* Search input interactive hover glow */
         .search-input-box {
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -227,7 +166,7 @@
     </div>
 
     <!-- MAIN APP CONTAINER -->
-    <div class="relative z-10 flex flex-col min-h-screen pb-28 md:pb-12">
+    <div class="relative z-10 flex flex-col min-h-screen pb-12">
         
         <!-- Top Navigation Header -->
         <header class="sticky top-0 z-40 top-navbar px-4 py-3.5">
@@ -251,10 +190,13 @@
                     <button onclick="switchTab('contact')" id="tab-contact" class="nav-btn px-4 py-2 rounded-full text-gray-400 hover:text-white transition-all">Связь</button>
                 </nav>
 
-                <div class="flex items-center gap-2">
-                    <button onclick="tgOpen('https://t.me/neleron')" class="hidden sm:flex items-center gap-2 bg-white hover:bg-gray-200 text-black text-xs font-bold px-5 py-3 rounded-full transition-all shadow-xl">
-                        Написать @neleron
-                    </button>
+                <!-- Mobile Header Nav -->
+                <div class="flex md:hidden overflow-x-auto no-scrollbar gap-1 max-w-[200px] sm:max-w-[260px] p-1 bg-white/5 rounded-full border border-white/10">
+                    <button onclick="switchTab('hero')" id="mtab-hero" class="nav-btn active px-3 py-1.5 rounded-full text-xs shrink-0">Главная</button>
+                    <button onclick="switchTab('about')" id="mtab-about" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">О мне</button>
+                    <button onclick="switchTab('price')" id="mtab-price" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">Прайс</button>
+                    <button onclick="switchTab('reviews')" id="mtab-reviews" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">Отзывы</button>
+                    <button onclick="switchTab('contact')" id="mtab-contact" class="nav-btn px-3 py-1.5 rounded-full text-xs text-gray-400 shrink-0">Связь</button>
                 </div>
             </div>
         </header>
@@ -262,7 +204,7 @@
         <!-- Main Body Content -->
         <main class="max-w-2xl mx-auto px-4 pt-8 flex-1 w-full">
 
-            <!-- SECTION 1: HERO (ОТЗЫВЫ КЛИЕНТОВ) -->
+            <!-- SECTION 1: HERO -->
             <section id="sec-hero" class="space-y-6 anim-in">
                 <div class="glass-card p-8 md:p-12 space-y-6 text-center rounded-[36px]">
                     <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-mono text-gray-200 mx-auto shadow-inner">
@@ -292,7 +234,7 @@
 
             <!-- SECTION 2: ABOUT -->
             <section id="sec-about" class="hidden space-y-6 anim-in">
-                <div class="glass-card p-8 md:p-10 space-y-5">
+                <div class="glass-card p-8 md:p-10 space-y-5 rounded-[36px]">
                     <h2 class="text-xl font-bold text-white font-mono">// О разработчике</h2>
                     <p class="text-base text-gray-300 leading-relaxed">
                         Меня зовут Modress. Профессионально занимаюсь разработкой ПО, созданием интеграций, ботов любой сложности и интерактивных интерфейсов. Фокусируюсь на качестве, отказоустойчивости серверов и удобстве интерфейсов.
@@ -394,22 +336,22 @@
                     </button>
                 </div>
 
-                <!-- Красивая интерактивная строка поиска отзывов -->
+                <!-- Search Box -->
                 <div class="search-input-box glass-card px-4 py-3.5 flex items-center gap-3 rounded-[24px]">
                     <span class="text-gray-400 text-base">🔍</span>
                     <input type="text" id="review-search" oninput="renderReviews()" placeholder="Поиск по отзывам или именам клиентов..." class="w-full bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none font-sans">
                 </div>
 
-                <!-- Под-вкладки (Папки): Все / С фото / Без фото -->
+                <!-- Filter Tabs -->
                 <div class="flex items-center gap-1.5 p-1.5 glass-card rounded-full w-fit">
                     <button onclick="setReviewFilter('all')" id="filter-all" class="px-4 py-2 rounded-full text-xs font-mono font-bold bg-white text-black transition-all">Все (<span id="count-all">0</span>)</button>
                     <button onclick="setReviewFilter('with-photo')" id="filter-with-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">📷 С фото (<span id="count-photo">0</span>)</button>
                     <button onclick="setReviewFilter('without-photo')" id="filter-without-photo" class="px-4 py-2 rounded-full text-xs font-mono font-medium text-gray-400 hover:text-white transition-all">💬 Без фото (<span id="count-nophoto">0</span>)</button>
                 </div>
 
-                <!-- Сетка отзывов -->
+                <!-- Reviews Grid -->
                 <div id="reviews-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Заполняется динамически -->
+                    <!-- Dynamic Items -->
                 </div>
             </section>
 
@@ -454,14 +396,13 @@
                     </div>
                 </div>
             </section>
-
         </main>
 
-        <!-- iOS STYLE SHEET MODAL FOR ADDING REVIEW -->
+        <!-- iOS SHEET MODAL FOR ADDING REVIEW -->
         <div id="review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all" onclick="if(event.target === this) closeReviewModal()">
             <div class="w-full max-w-lg bg-[#1c1c1e] sm:bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-t-[36px] sm:rounded-[32px] p-6 sm:p-7 space-y-5 border border-white/15 shadow-2xl anim-in relative max-h-[90vh] overflow-y-auto">
                 
-                <!-- iOS Grabber Bar (Top Pill) -->
+                <!-- iOS Grabber Bar -->
                 <div class="w-10 h-1 bg-white/30 rounded-full mx-auto sm:hidden mb-1"></div>
 
                 <!-- Header -->
@@ -472,7 +413,7 @@
                     </div>
                     <button type="button" onclick="closeReviewModal()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-gray-300 hover:text-white font-semibold text-sm transition-all active:scale-90">✕</button>
                 </div>
-                
+
                 <div class="space-y-4">
                     <!-- Telegram Profile Info Banner -->
                     <div class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3">
@@ -486,11 +427,7 @@
                         <span class="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Verified</span>
                     </div>
 
-                    <input type="hidden" id="rev-name">
-                    <input type="hidden" id="rev-link">
-                    <input type="hidden" id="rev-photo">
-
-                    <!-- iOS Segmented Rating Selector -->
+                    <!-- Segmented Rating Selector -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-2 px-1">Ваша оценка</label>
                         <div class="grid grid-cols-5 gap-1.5 p-1 bg-black/40 border border-white/10 rounded-2xl">
@@ -505,10 +442,10 @@
                     <!-- Text Area -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Текст отзыва</label>
-                        <textarea id="rev-text" rows="3" placeholder="Опишите ваши впечатления от работы..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all font-sans resize-none"></textarea>
+                        <textarea id="rev-text" rows="3" placeholder="Опишите ваши впечатления от работы..." class="w-full bg-black/40 border border-white/10 rounded-2xl p-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all font-sans resize-none"></textarea>
                     </div>
 
-                    <!-- iOS Image Attachment Box -->
+                    <!-- Image Attachment Box -->
                     <div>
                         <label class="text-xs text-gray-400 font-semibold uppercase tracking-wider block mb-1.5 px-1">Прикрепить скриншот / фото</label>
                         <div class="relative bg-black/30 border border-dashed border-white/20 hover:border-white/40 rounded-2xl p-3.5 transition-all flex items-center justify-between cursor-pointer group" onclick="document.getElementById('rev-file').click()">
@@ -532,39 +469,6 @@
             </div>
         </div>
 
-        <!-- Mobile Floating Glass Navigation Bar -->
-        <div class="md:hidden fixed bottom-5 left-4 right-4 z-50">
-            <div class="modern-bottom-dock px-3 py-2">
-                <div class="flex items-center justify-around text-xs font-medium">
-                    <button onclick="switchTab('hero')" id="mtab-hero" class="mobile-nav-btn active flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
-                        <span class="tab-icon text-base transition-transform">🏠</span>
-                        <span class="text-[10px] tracking-tight font-mono">Главная</span>
-                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
-                    </button>
-                    <button onclick="switchTab('about')" id="mtab-about" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
-                        <span class="tab-icon text-base transition-transform">👤</span>
-                        <span class="text-[10px] tracking-tight font-mono">О мне</span>
-                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
-                    </button>
-                    <button onclick="switchTab('price')" id="mtab-price" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
-                        <span class="tab-icon text-base transition-transform">💎</span>
-                        <span class="text-[10px] tracking-tight font-mono">Прайс</span>
-                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
-                    </button>
-                    <button onclick="switchTab('reviews')" id="mtab-reviews" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
-                        <span class="tab-icon text-base transition-transform">⭐</span>
-                        <span class="text-[10px] tracking-tight font-mono">Отзывы</span>
-                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
-                    </button>
-                    <button onclick="switchTab('contact')" id="mtab-contact" class="mobile-nav-btn flex flex-col items-center gap-1 py-1.5 px-3 text-gray-400 hover:text-white rounded-full">
-                        <span class="tab-icon text-base transition-transform">✉️</span>
-                        <span class="text-[10px] tracking-tight font-mono">Связь</span>
-                        <span class="active-indicator absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#fff]"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <script>
@@ -574,7 +478,7 @@
         let userName = "Клиент";
         let userLink = "https://t.me/neleron";
         let userPhoto = "";
-        let currentUsername = ""; 
+        let currentUsername = "";
 
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const u = tg.initDataUnsafe.user;
@@ -591,14 +495,9 @@
             }
         }
 
-        // Кнопка удаления видима ТОЛЬКО владельцу аккаунта @neleron
+        // Admin rights strictly for @neleron
         let isAdmin = currentUsername === 'neleron' || currentUsername === 'neleronbot';
 
-        document.getElementById('rev-name').value = userName;
-        document.getElementById('rev-link').value = userLink;
-        document.getElementById('rev-photo').value = userPhoto;
-
-        // Setup iOS Profile Banner in Modal
         document.getElementById('ios-user-display').textContent = userName;
         const avatarBox = document.getElementById('ios-user-avatar');
         if (userPhoto) {
@@ -641,16 +540,15 @@
                     sec.classList.remove('anim-in');
                 }
             });
-            
+
             const activeSec = document.getElementById(`sec-${tabId}`);
             if (activeSec) {
                 activeSec.classList.remove('hidden');
-                void activeSec.offsetWidth; 
+                void activeSec.offsetWidth;
                 activeSec.classList.add('anim-in');
             }
 
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active', 'text-white'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active', 'text-white'));
 
             const dBtn = document.getElementById(`tab-${tabId}`);
             if (dBtn) dBtn.classList.add('active');
@@ -662,10 +560,10 @@
         }
 
         function tgOpen(url) {
-            if (tg && tg.openLink) { 
-                tg.openLink(url); 
-            } else { 
-                window.open(url, '_blank'); 
+            if (tg && tg.openLink) {
+                tg.openLink(url);
+            } else {
+                window.open(url, '_blank');
             }
         }
 
@@ -691,17 +589,22 @@
 
         function getReviews() {
             const saved = localStorage.getItem('modress_pro_reviews');
-            if (!saved) return [];
+            if (!saved) {
+                // Zero initial fake reviews (clean slate)
+                const emptyItems = [];
+                localStorage.setItem('modress_pro_reviews', JSON.stringify(emptyItems));
+                return emptyItems;
+            }
             try { return JSON.parse(saved); } catch(e) { return []; }
         }
 
         function renderReviews() {
             const list = document.getElementById('reviews-container');
             if (!list) return;
-            
+
             const reviews = getReviews();
             const searchQuery = (document.getElementById('review-search')?.value || '').toLowerCase().trim();
-            
+
             const withPhoto = reviews.filter(r => r.image && r.image.trim() !== '');
             const withoutPhoto = reviews.filter(r => !r.image || r.image.trim() === '');
 
@@ -721,7 +624,7 @@
             }
 
             if (targetReviews.length === 0) {
-                list.innerHTML = `<div class="glass-card p-8 text-center text-sm text-gray-500 font-mono col-span-2 rounded-[28px]">Ничего не найдено по вашему запросу.</div>`;
+                list.innerHTML = `<div class="glass-card p-8 text-center text-sm text-gray-500 font-mono col-span-2 rounded-[28px]">Отзывов пока нет. Будьте первыми!</div>`;
                 return;
             }
 
@@ -737,6 +640,7 @@
 
                 let imageHtml = r.image ? `<div class="mt-3.5 rounded-2xl overflow-hidden max-h-60 border border-white/10"><img src="${r.image}" class="w-full h-full object-cover"></div>` : '';
 
+                // Delete button strictly for admin @neleron
                 let deleteBtnHtml = isAdmin ? `
                     <button onclick="deleteReview(${index})" class="text-[11px] font-mono font-bold text-red-400 hover:text-red-200 bg-red-500/20 hover:bg-red-500/40 px-3 py-1 rounded-full transition-all border border-red-500/30">
                         Удалить ✕
@@ -819,10 +723,9 @@
                     text, 
                     image: imageUrl 
                 };
-                
+
                 const reviews = getReviews();
                 reviews.unshift(newReview);
-                
                 try {
                     localStorage.setItem('modress_pro_reviews', JSON.stringify(reviews));
                 } catch(e) {
@@ -831,12 +734,11 @@
 
                 if (textInput) textInput.value = '';
                 if (fileInput) fileInput.value = '';
-                
+
                 const fileNameLabel = document.getElementById('ios-file-name');
                 if (fileNameLabel) fileNameLabel.textContent = 'Выбрать медиафайл';
-                
-                currentRating = 5;
 
+                currentRating = 5;
                 closeReviewModal();
                 renderReviews();
             };
