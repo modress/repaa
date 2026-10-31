@@ -735,7 +735,22 @@ async function submitReview() {
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            fetchReviewsFromServer();
+       // Проверь, чтобы функция называлась одинаково везде:
+async function fetchReviews() {
+    try {
+        const response = await fetch(API_URL);
+        if (response.ok) {
+            const data = await response.json();
+            serverReviews = data.reviews || [];
+            renderReviews();
+        }
+    } catch (e) {
+        console.error("Ошибка загрузки отзывов", e);
+    }
+}
+
+// И в блоке инициализации при старте страницы вызывай её так:
+fetchReviews();
             // Автоматическое обновление каждые 3 секунды, чтобы подтягивать чужие отзывы
             setInterval(fetchReviewsFromServer, 3000);
         });
