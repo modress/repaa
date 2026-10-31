@@ -618,7 +618,6 @@ async function submitReview() {
         sendData("");
     }
 }
-}
         async function deleteReview(index) {
             try {
                 const res = await fetch(`${API_URL}/${index}?username=${currentUsername}`, {
