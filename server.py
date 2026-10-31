@@ -1,12 +1,12 @@
-import os
-import json
-import uuid
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import json
+import os
 
 app = FastAPI()
 
-# Настройка CORS, чтобы сайт с GitHub Pages мог свободно отправлять запросы
+# Разрешаем запросы с любых сайтов (чтобы GitHub Pages свободно общался с бэкендом)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,13 +17,18 @@ app.add_middleware(
 
 REVIEWS_FILE = "reviews.json"
 
+class Review(BaseModel):
+    text: str
+    rating: int = 5
+    image: str = None
+
 def load_reviews():
     if not os.path.exists(REVIEWS_FILE):
         return []
     try:
         with open(REVIEWS_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception:
+    except:
         return []
 
 def save_reviews(reviews):
@@ -31,33 +36,17 @@ def save_reviews(reviews):
         json.dump(reviews, f, ensure_ascii=False, indent=4)
 
 @app.get("/api/reviews")
-@app.get("/reviews")
-async def get_reviews():
-    return load_reviews()
+def get_reviews():
+    return {"reviews": load_reviews()}
 
 @app.post("/api/reviews")
-@app.post("/reviews")
-async def add_review(request: Request):
-    try:
-        body = await request.json()
-    except Exception:
-        body = {}
-
+def add_review(review: Review):
     reviews = load_reviews()
     new_review = {
-        "id": str(uuid.uuid4()),
-        "name": body.get("name", "Клиент"),
-        "text": body.get("text", ""),
-        "rating": body.get("rating", 5),
-        "image": body.get("image"),
-        "link": body.get("link"),
-        "photo": body.get("photo")
+        "text": review.text,
+        "rating": review.rating,
+        "image": review.image
     }
-    reviews.append(new_review)
+    reviews.insert(0, new_review) # Добавляем новый отзыв в самый верх
     save_reviews(reviews)
-    return {"status": "success", "review": new_review}
-
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("server:app", host="0.0.0.0", port=port)
+    return {"status": "success", "reviews": reviews}
