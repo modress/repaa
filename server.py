@@ -39,10 +39,12 @@ class Review(BaseModel):
     photo: str = None
 
 @app.get("/api/reviews")
+@app.get("/reviews")
 def get_reviews():
     return load_reviews()
 
 @app.post("/api/reviews")
+@app.post("/reviews")
 def add_review(review: Review):
     reviews = load_reviews()
     new_review = {
@@ -59,6 +61,7 @@ def add_review(review: Review):
     return {"status": "success", "review": new_review}
 
 @app.delete("/api/reviews/{review_id}")
+@app.delete("/reviews/{review_id}")
 def delete_review(review_id: str):
     reviews = load_reviews()
     updated_reviews = [r for r in reviews if r.get("id") != review_id]
