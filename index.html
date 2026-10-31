@@ -565,31 +565,46 @@
         let serverReviews = [];
         const API_URL = 'https://modress.bothost.tech/api/reviews';
 
-        async function fetchReviewsFromServer() {
-            try {
-                const res = await fetch(API_URL);
-                if (res.ok) {
-                    serverReviews = await res.json();
-                    renderReviews();
-                }
-            } catch (e) {
-                console.error("Ошибка связи с сервером", e);
-            }
+       // Было (примерно так):
+// const response = await fetch('/api/reviews', { method: 'POST', body: ... });
+async function submitReview() {
+    const textInput = document.getElementById('rev-text');
+    const text = textInput ? textInput.value.trim() : '';
+    const fileInput = document.getElementById('rev-file');
+
+    // Проверяем текст ДО отправки
+    if (!text) {
+        if (textInput) {
+            textInput.focus();
+            textInput.classList.add('ring-2', 'ring-red-500');
+            setTimeout(() => textInput.classList.remove('ring-2', 'ring-red-500'), 1500);
         }
+        return;
+    }
 
-        async function submitReview() {
-            const textInput = document.getElementById('rev-text');
-            const text = textInput ? textInput.value.trim() : '';
-            const fileInput = document.getElementById('rev-file');
+    const reviewData = {
+        text: text,
+        rating: 5
+    };
 
-            if (!text) {
-                if (textInput) {
-                    textInput.focus();
-                    textInput.classList.add('ring-2', 'ring-red-500');
-                    setTimeout(() => textInput.classList.remove('ring-2', 'ring-red-500'), 1500);
-                }
-                return;
-            }
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reviewData)
+        });
+
+        if (response.ok) {
+            fetchReviewsFromServer();
+            if (textInput) textInput.value = ''; // Очищаем поле после успешной отправки
+        } else {
+            alert('Не удалось отправить отзыв на сервер!');
+        }
+    } catch (e) {
+        console.error("Ошибка связи с сервером", e);
+        alert('Не удалось отправить отзыв на сервер!');
+    }
+}
 
             const newReview = {
                 name: userName || "Клиент",
