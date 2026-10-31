@@ -69,3 +69,8 @@ def delete_review(review_id: str):
         raise HTTPException(status_code=404, detail="Отзыв не найден")
     save_reviews(updated_reviews)
     return {"status": "deleted"}
+    
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("server:app", host="0.0.0.0", port=port)
